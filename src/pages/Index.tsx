@@ -177,13 +177,13 @@ const Index = () => {
               playsInline
               muted
               className={`w-full h-full object-cover ${
-                hasPhoto ? "hidden" : "blur-sm"
+                hasPhoto ? "hidden" : ""
               }`}
             />
             <canvas
               ref={canvasRef}
               className={`w-full h-full object-cover ${
-                hasPhoto ? "blur-sm" : "hidden"
+                hasPhoto ? "" : "hidden"
               }`}
             />
             {state === "success" && (
