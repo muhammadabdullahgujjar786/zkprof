@@ -20,7 +20,7 @@ All colors MUST be HSL.
     --primary: 162 63% 20%;
     --primary-foreground: 60 9% 97%;
 
-    --secondary: 0 100% 62%;
+    --secondary: 359 81% 63%;
     --secondary-foreground: 60 9% 97%;
 
     --muted: 162 20% 15%;
@@ -29,7 +29,7 @@ All colors MUST be HSL.
     --accent: 100 50% 88%;
     --accent-foreground: 162 63% 20%;
 
-    --destructive: 0 100% 62%;
+    --destructive: 359 81% 63%;
     --destructive-foreground: 60 9% 97%;
 
     --border: 162 20% 15%;
@@ -40,7 +40,7 @@ All colors MUST be HSL.
 
     --glow-primary: 162 63% 20%;
     --glow-accent: 100 50% 88%;
-    --glow-secondary: 0 100% 62%;
+    --glow-secondary: 359 81% 63%;
   }
 }
 

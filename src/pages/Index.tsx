@@ -37,66 +37,7 @@ const Index = () => {
     };
   }, []);
 
-  const applyScrambleEffect = (ctx: CanvasRenderingContext2D, width: number, height: number) => {
-    const imageData = ctx.getImageData(0, 0, width, height);
-    const data = imageData.data;
-    
-    // Define eye region (middle horizontal band - approximately 35-55% of height)
-    const eyeRegionStart = height * 0.35;
-    const eyeRegionEnd = height * 0.55;
-    
-    // Apply heavy pixelation/scramble effect everywhere except eye region
-    for (let y = 0; y < height; y += 1) {
-      for (let x = 0; x < width; x += 1) {
-        // Check if we're in the eye region
-        const isInEyeRegion = y >= eyeRegionStart && y <= eyeRegionEnd;
-        
-        if (!isInEyeRegion) {
-          // Calculate distance-based blur intensity
-          const distanceFromEyeRegion = y < eyeRegionStart 
-            ? (eyeRegionStart - y) / eyeRegionStart 
-            : (y - eyeRegionEnd) / (height - eyeRegionEnd);
-          
-          // Heavy pixelation outside eye region (16-32px blocks)
-          const blockSize = Math.floor(16 + distanceFromEyeRegion * 16);
-          
-          // Only process if we're at a block boundary
-          if (x % blockSize === 0 && y % blockSize === 0) {
-            // Get average color of block
-            let r = 0, g = 0, b = 0, count = 0;
-            
-            for (let by = 0; by < blockSize && y + by < height; by++) {
-              for (let bx = 0; bx < blockSize && x + bx < width; bx++) {
-                const i = ((y + by) * width + (x + bx)) * 4;
-                r += data[i];
-                g += data[i + 1];
-                b += data[i + 2];
-                count++;
-              }
-            }
-            
-            r = Math.floor(r / count);
-            g = Math.floor(g / count);
-            b = Math.floor(b / count);
-            
-            // Fill block with averaged color + heavy noise
-            const noiseLevel = 40 + (distanceFromEyeRegion * 60);
-            for (let by = 0; by < blockSize && y + by < height; by++) {
-              for (let bx = 0; bx < blockSize && x + bx < width; bx++) {
-                const i = ((y + by) * width + (x + bx)) * 4;
-                const noise = (Math.random() - 0.5) * noiseLevel;
-                data[i] = Math.max(0, Math.min(255, r + noise));
-                data[i + 1] = Math.max(0, Math.min(255, g + noise));
-                data[i + 2] = Math.max(0, Math.min(255, b + noise));
-              }
-            }
-          }
-        }
-      }
-    }
-    
-    ctx.putImageData(imageData, 0, 0);
-  };
+  const [isHovering, setIsHovering] = useState(false);
 
   const takePhoto = () => {
     if (videoRef.current && canvasRef.current) {
@@ -107,12 +48,16 @@ const Index = () => {
       const ctx = canvas.getContext("2d");
       if (ctx) {
         ctx.drawImage(video, 0, 0);
-        // Apply scrambling effect
-        applyScrambleEffect(ctx, canvas.width, canvas.height);
         setHasPhoto(true);
         setState("photo-taken");
       }
     }
+  };
+
+  const retakePhoto = () => {
+    setHasPhoto(false);
+    setState("idle");
+    setIsHovering(false);
   };
 
   const encryptAndMint = async () => {
@@ -172,7 +117,11 @@ const Index = () => {
           </div>
 
           {/* Camera Preview */}
-          <div className="relative camera-preview w-[300px] h-[380px] bg-muted/20">
+          <div 
+            className="relative camera-preview w-[300px] h-[380px] bg-muted/20"
+            onMouseEnter={() => setIsHovering(true)}
+            onMouseLeave={() => setIsHovering(false)}
+          >
             <video
               ref={videoRef}
               autoPlay
@@ -188,6 +137,9 @@ const Index = () => {
                 hasPhoto ? "" : "hidden"
               }`}
             />
+            {hasPhoto && !isHovering && (
+              <div className="absolute inset-0 bg-black/80 backdrop-blur-md transition-opacity duration-300" />
+            )}
             {state === "success" && (
               <div className="absolute inset-0 flex items-center justify-center bg-black/40">
                 <div className="text-center space-y-2">
@@ -213,15 +165,15 @@ const Index = () => {
 
           {/* Buttons */}
           {state !== "success" && (
-            <div className="w-full space-y-3">
+            <div className="w-[300px] space-y-3">
               <div className="flex gap-3">
                 <Button
-                  onClick={takePhoto}
+                  onClick={hasPhoto ? retakePhoto : takePhoto}
                   disabled={state !== "idle" && state !== "photo-taken"}
                   variant="outline"
                   className="flex-1 h-12 rounded-xl font-medium text-base border-2 border-muted hover:bg-muted/10"
                 >
-                  Take a Photo
+                  {hasPhoto ? "Retake Photo" : "Take a Photo"}
                 </Button>
                 <Button
                   onClick={encryptAndMint}
