@@ -41,53 +41,55 @@ const Index = () => {
     const imageData = ctx.getImageData(0, 0, width, height);
     const data = imageData.data;
     
-    // Define eye region (middle horizontal band - approximately 30-50% of height)
+    // Define eye region (middle horizontal band - approximately 35-55% of height)
     const eyeRegionStart = height * 0.35;
     const eyeRegionEnd = height * 0.55;
-    const eyeRegionHeight = eyeRegionEnd - eyeRegionStart;
     
-    // Apply variable blur/scramble effect based on distance from eye region
-    const blockSize = 8;
-    
-    for (let y = 0; y < height; y += blockSize) {
-      for (let x = 0; x < width; x += blockSize) {
-        // Calculate intensity based on distance from eye region
-        const distanceFromEyeRegion = y < eyeRegionStart 
-          ? (eyeRegionStart - y) / eyeRegionStart 
-          : y > eyeRegionEnd 
-            ? (y - eyeRegionEnd) / (height - eyeRegionEnd)
-            : 0;
+    // Apply heavy pixelation/scramble effect everywhere except eye region
+    for (let y = 0; y < height; y += 1) {
+      for (let x = 0; x < width; x += 1) {
+        // Check if we're in the eye region
+        const isInEyeRegion = y >= eyeRegionStart && y <= eyeRegionEnd;
         
-        // Scale blur intensity (0 in eye region, up to 1.0 at edges)
-        const blurIntensity = Math.min(distanceFromEyeRegion * 1.2, 1.0);
-        const effectiveBlockSize = Math.max(2, Math.floor(blockSize * (1 + blurIntensity * 3)));
-        
-        // Get average color of block
-        let r = 0, g = 0, b = 0, count = 0;
-        
-        for (let by = 0; by < effectiveBlockSize && y + by < height; by++) {
-          for (let bx = 0; bx < effectiveBlockSize && x + bx < width; bx++) {
-            const i = ((y + by) * width + (x + bx)) * 4;
-            r += data[i];
-            g += data[i + 1];
-            b += data[i + 2];
-            count++;
-          }
-        }
-        
-        r = Math.floor(r / count);
-        g = Math.floor(g / count);
-        b = Math.floor(b / count);
-        
-        // Fill block with average color + noise (stronger noise outside eye region)
-        const noiseLevel = 30 + (blurIntensity * 50);
-        for (let by = 0; by < effectiveBlockSize && y + by < height; by++) {
-          for (let bx = 0; bx < effectiveBlockSize && x + bx < width; bx++) {
-            const i = ((y + by) * width + (x + bx)) * 4;
-            const noise = (Math.random() - 0.5) * noiseLevel;
-            data[i] = Math.max(0, Math.min(255, r + noise));
-            data[i + 1] = Math.max(0, Math.min(255, g + noise));
-            data[i + 2] = Math.max(0, Math.min(255, b + noise));
+        if (!isInEyeRegion) {
+          // Calculate distance-based blur intensity
+          const distanceFromEyeRegion = y < eyeRegionStart 
+            ? (eyeRegionStart - y) / eyeRegionStart 
+            : (y - eyeRegionEnd) / (height - eyeRegionEnd);
+          
+          // Heavy pixelation outside eye region (16-32px blocks)
+          const blockSize = Math.floor(16 + distanceFromEyeRegion * 16);
+          
+          // Only process if we're at a block boundary
+          if (x % blockSize === 0 && y % blockSize === 0) {
+            // Get average color of block
+            let r = 0, g = 0, b = 0, count = 0;
+            
+            for (let by = 0; by < blockSize && y + by < height; by++) {
+              for (let bx = 0; bx < blockSize && x + bx < width; bx++) {
+                const i = ((y + by) * width + (x + bx)) * 4;
+                r += data[i];
+                g += data[i + 1];
+                b += data[i + 2];
+                count++;
+              }
+            }
+            
+            r = Math.floor(r / count);
+            g = Math.floor(g / count);
+            b = Math.floor(b / count);
+            
+            // Fill block with averaged color + heavy noise
+            const noiseLevel = 40 + (distanceFromEyeRegion * 60);
+            for (let by = 0; by < blockSize && y + by < height; by++) {
+              for (let bx = 0; bx < blockSize && x + bx < width; bx++) {
+                const i = ((y + by) * width + (x + bx)) * 4;
+                const noise = (Math.random() - 0.5) * noiseLevel;
+                data[i] = Math.max(0, Math.min(255, r + noise));
+                data[i + 1] = Math.max(0, Math.min(255, g + noise));
+                data[i + 2] = Math.max(0, Math.min(255, b + noise));
+              }
+            }
           }
         }
       }
