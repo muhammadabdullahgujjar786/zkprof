@@ -12,6 +12,7 @@ const Index = () => {
   const [photoDataUrl, setPhotoDataUrl] = useState("");
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const pixelationCanvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     // Initialize camera
@@ -37,6 +38,48 @@ const Index = () => {
       }
     };
   }, []);
+
+  // Live pixelation effect on video stream
+  useEffect(() => {
+    if (!videoRef.current || !pixelationCanvasRef.current || state !== "idle") {
+      return;
+    }
+
+    const video = videoRef.current;
+    const canvas = pixelationCanvasRef.current;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    let animationFrameId: number;
+    const pixelSize = 12;
+
+    const applyPixelation = () => {
+      if (state !== "idle") return;
+
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      
+      for (let y = 0; y < canvas.height; y += pixelSize) {
+        for (let x = 0; x < canvas.width; x += pixelSize) {
+          const pixelIndexPosition = (x + y * canvas.width) * 4;
+          const r = imageData.data[pixelIndexPosition];
+          const g = imageData.data[pixelIndexPosition + 1];
+          const b = imageData.data[pixelIndexPosition + 2];
+          
+          ctx.fillStyle = `rgb(${r},${g},${b})`;
+          ctx.fillRect(x, y, pixelSize, pixelSize);
+        }
+      }
+
+      animationFrameId = requestAnimationFrame(applyPixelation);
+    };
+
+    applyPixelation();
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, [state]);
 
   const takePhoto = () => {
     if (videoRef.current && canvasRef.current) {
@@ -133,6 +176,12 @@ const Index = () => {
               className={`w-full h-full object-cover ${hasPhoto ? "hidden" : ""}`}
             />
             <canvas
+              ref={pixelationCanvasRef}
+              width="300"
+              height="380"
+              className={`absolute inset-0 w-full h-full ${hasPhoto ? "hidden" : ""}`}
+            />
+            <canvas
               ref={canvasRef}
               width="300"
               height="380"
@@ -177,7 +226,7 @@ const Index = () => {
                   onClick={hasPhoto ? retakePhoto : takePhoto}
                   disabled={state !== "idle" && state !== "photo-taken"}
                   variant="outline"
-                  className="flex-1 h-12 rounded-xl font-medium text-base border-2 border-muted hover:bg-muted/10"
+                  className="flex-1 h-12 rounded-xl font-medium text-base border-2 border-muted hover:border-[#ed565a] hover:text-[#ed565a]"
                 >
                   {hasPhoto ? "Retake Photo" : "Take a Photo"}
                 </Button>
