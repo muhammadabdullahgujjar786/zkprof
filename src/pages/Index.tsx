@@ -19,9 +19,18 @@ const PAYMENT_AMOUNT_USD = 0.01; // $0.01 for testing, will change to 5.00 for p
 
 const fetchSolPrice = async (): Promise<number> => {
   try {
-    const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd');
-    const data = await response.json();
-    return data.solana.usd;
+    const { data, error } = await supabase.functions.invoke('get-sol-price');
+    
+    if (error) {
+      console.error('Failed to fetch SOL price:', error);
+      throw new Error('Unable to fetch SOL price. Please try again.');
+    }
+    
+    if (!data || typeof data.price !== 'number') {
+      throw new Error('Invalid price data received');
+    }
+    
+    return data.price;
   } catch (error) {
     console.error('Failed to fetch SOL price:', error);
     throw new Error('Unable to fetch SOL price. Please try again.');
