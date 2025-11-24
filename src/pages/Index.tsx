@@ -183,7 +183,7 @@ const Index = () => {
   };
   return <div className="min-h-screen flex flex-col">
       {/* Header */}
-      <div className="w-full flex justify-end px-8 py-6">
+      <div className="w-full flex justify-start px-8 py-6">
         <img src={zkProfLogo} alt="zkProf" className="h-8" />
       </div>
 
