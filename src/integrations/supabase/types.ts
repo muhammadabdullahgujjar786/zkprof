@@ -14,7 +14,77 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      encrypted_photos: {
+        Row: {
+          blob_id: string
+          commitment: string
+          created_at: string | null
+          encrypted_image_url: string
+          encrypted_key: string
+          id: string
+          iv: string
+          user_public_key: string
+        }
+        Insert: {
+          blob_id: string
+          commitment: string
+          created_at?: string | null
+          encrypted_image_url: string
+          encrypted_key: string
+          id?: string
+          iv: string
+          user_public_key: string
+        }
+        Update: {
+          blob_id?: string
+          commitment?: string
+          created_at?: string | null
+          encrypted_image_url?: string
+          encrypted_key?: string
+          id?: string
+          iv?: string
+          user_public_key?: string
+        }
+        Relationships: []
+      }
+      nft_mints: {
+        Row: {
+          blob_id: string | null
+          created_at: string | null
+          id: string
+          metadata_uri: string
+          mint_address: string
+          payment_signature: string
+          user_public_key: string
+        }
+        Insert: {
+          blob_id?: string | null
+          created_at?: string | null
+          id?: string
+          metadata_uri: string
+          mint_address: string
+          payment_signature: string
+          user_public_key: string
+        }
+        Update: {
+          blob_id?: string | null
+          created_at?: string | null
+          id?: string
+          metadata_uri?: string
+          mint_address?: string
+          payment_signature?: string
+          user_public_key?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "nft_mints_blob_id_fkey"
+            columns: ["blob_id"]
+            isOneToOne: false
+            referencedRelation: "encrypted_photos"
+            referencedColumns: ["blob_id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
