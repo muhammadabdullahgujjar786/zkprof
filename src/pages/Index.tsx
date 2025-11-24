@@ -302,7 +302,7 @@ const Index = () => {
       </div>
 
       {/* Footer */}
-      <div className="w-full flex justify-start px-8 py-6">
+      <div className="w-full flex justify-end px-8 py-6">
         <a href="https://github.com/tenshijinn/arubaito" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors">
           <Github size={16} />
           <span>View on GitHub</span>
