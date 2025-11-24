@@ -1,13 +1,23 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Github } from "lucide-react";
+import { Github, Wallet } from "lucide-react";
+import { useWallet } from '@solana/wallet-adapter-react';
+import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+import { Connection, PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL } from '@solana/web3.js';
+import { encryptImage } from "@/lib/crypto";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import faceGuide from "@/assets/pfp-guide.png";
 import zcashLogo from "@/assets/zcash-logo.png";
 import solanaLogo from "@/assets/solana-logo.png";
 import zkProfLogo from "@/assets/zkprof-logo.png";
 type AppState = "idle" | "photo-taken" | "encrypting" | "minting" | "success";
+const RECIPIENT_ADDRESS = "8DuKPJAqMEa84VTcDfqF967CUG98Tf6DdtfyJFviSKL6";
+const PAYMENT_AMOUNT = 5;
+
 const Index = () => {
+  const { publicKey, signTransaction, connected } = useWallet();
   const [state, setState] = useState<AppState>("idle");
   const [progress, setProgress] = useState(0);
   const [hasPhoto, setHasPhoto] = useState(false);
@@ -15,6 +25,7 @@ const Index = () => {
   const [photoDataUrl, setPhotoDataUrl] = useState("");
   const [fps, setFps] = useState(0);
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [mintAddress, setMintAddress] = useState("");
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const pixelationCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -152,22 +163,103 @@ const Index = () => {
     }
   };
   const encryptAndMint = async () => {
-    setState("encrypting");
-    setProgress(0);
-
-    // Simulate encryption phase
-    for (let i = 0; i <= 50; i += 2) {
-      await new Promise(resolve => setTimeout(resolve, 30));
-      setProgress(i);
+    if (!publicKey || !signTransaction) {
+      toast.error("Please connect your Phantom wallet first");
+      return;
     }
-    setState("minting");
 
-    // Simulate minting phase
-    for (let i = 50; i <= 100; i += 2) {
-      await new Promise(resolve => setTimeout(resolve, 30));
-      setProgress(i);
+    try {
+      setState("encrypting");
+      setProgress(10);
+
+      // 1. Encrypt the image
+      const publicKeyBase64 = publicKey.toBase58();
+      const encryption = await encryptImage(photoDataUrl, publicKeyBase64);
+      setProgress(25);
+
+      // 2. Convert encrypted data to blob for upload
+      const encryptedBlob = new Blob(
+        [Uint8Array.from(atob(encryption.encryptedData), c => c.charCodeAt(0))],
+        { type: 'application/octet-stream' }
+      );
+      setProgress(35);
+
+      // 3. Upload encrypted image to Supabase Storage
+      const blobId = `${publicKeyBase64}-${Date.now()}`;
+      const { error: uploadError } = await supabase.storage
+        .from('encrypted-pfps')
+        .upload(`${blobId}.enc`, encryptedBlob);
+
+      if (uploadError) throw uploadError;
+      setProgress(50);
+
+      // 4. Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('encrypted-pfps')
+        .getPublicUrl(`${blobId}.enc`);
+
+      // 5. Store encryption metadata in database
+      const { error: dbError } = await supabase
+        .from('encrypted_photos')
+        .insert({
+          blob_id: blobId,
+          encrypted_key: encryption.encryptedKey,
+          user_public_key: publicKeyBase64,
+          commitment: encryption.commitment,
+          encrypted_image_url: publicUrl,
+          iv: encryption.iv
+        });
+
+      if (dbError) throw dbError;
+      setProgress(60);
+
+      // 6. Process payment
+      setState("minting");
+      const connection = new Connection('https://api.mainnet-beta.solana.com');
+      const recipientPubkey = new PublicKey(RECIPIENT_ADDRESS);
+      
+      const transaction = new Transaction().add(
+        SystemProgram.transfer({
+          fromPubkey: publicKey,
+          toPubkey: recipientPubkey,
+          lamports: PAYMENT_AMOUNT * LAMPORTS_PER_SOL
+        })
+      );
+
+      const { blockhash } = await connection.getLatestBlockhash();
+      transaction.recentBlockhash = blockhash;
+      transaction.feePayer = publicKey;
+
+      const signed = await signTransaction(transaction);
+      const signature = await connection.sendRawTransaction(signed.serialize());
+      await connection.confirmTransaction(signature);
+      setProgress(80);
+
+      // 7. Store NFT mint record
+      const mintAddr = `mock-nft-${blobId}`;
+      const { error: mintError } = await supabase
+        .from('nft_mints')
+        .insert({
+          user_public_key: publicKeyBase64,
+          payment_signature: signature,
+          blob_id: blobId,
+          mint_address: mintAddr,
+          metadata_uri: `https://arweave.net/${encryption.commitment}`
+        });
+
+      if (mintError) throw mintError;
+      
+      setMintAddress(mintAddr);
+      setProgress(100);
+      setState("success");
+      toast.success("zkPFP successfully minted!");
+
+    } catch (error) {
+      console.error("Encryption/minting error:", error);
+      toast.error("Failed to encrypt and mint. Please try again.");
+      setState("photo-taken");
+      setProgress(0);
     }
-    setState("success");
   };
   const getStatusText = () => {
     switch (state) {
@@ -243,8 +335,15 @@ const Index = () => {
               </div>}
           </div>
 
+          {/* Wallet Connect */}
+          {!connected && (
+            <div className="w-[300px]">
+              <WalletMultiButton className="!w-full !h-12 !rounded-xl !font-styrene !font-black !text-base !bg-secondary !text-[#181818] !border-2 !border-secondary hover:!bg-transparent hover:!text-[#ed565a] hover:!border-[#ed565a]" />
+            </div>
+          )}
+
           {/* Buttons */}
-          {state !== "success" && <div className="w-[300px] space-y-3">
+          {state !== "success" && connected && <div className="w-[300px] space-y-3">
               <div className="flex gap-3">
                 <Button onClick={hasPhoto ? retakePhoto : takePhoto} disabled={state !== "idle" && state !== "photo-taken"} variant="outline" className="flex-1 h-12 rounded-xl font-styrene font-black text-base border-2 border-[#ed565a] text-[#ed565a] hover:bg-transparent hover:border-[#F0E3C3] hover:text-[#F0E3C3]">
                   {hasPhoto ? "Retake Photo" : "Take a Photo"}
