@@ -66,14 +66,14 @@ const Index = () => {
 
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
       const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      
+
       for (let y = 0; y < canvas.height; y += pixelSize) {
         for (let x = 0; x < canvas.width; x += pixelSize) {
           const pixelIndexPosition = (x + y * canvas.width) * 4;
           const r = imageData.data[pixelIndexPosition];
           const g = imageData.data[pixelIndexPosition + 1];
           const b = imageData.data[pixelIndexPosition + 2];
-          
+
           ctx.fillStyle = `rgb(${r},${g},${b})`;
           ctx.fillRect(x, y, pixelSize, pixelSize);
         }
@@ -127,26 +127,26 @@ const Index = () => {
       const canvas = canvasRef.current;
       const video = videoRef.current;
       const context = canvas.getContext("2d");
-      
+
       if (context) {
         // Draw the video frame
         context.drawImage(video, 0, 0, 300, 380);
-        
+
         // Draw the timestamp on the photo
-        context.fillStyle = '#ffffff';
-        context.font = '10px monospace';
-        context.textAlign = 'right';
-        const timeString = currentTime.toLocaleString('en-US', {
-          month: '2-digit',
-          day: '2-digit',
-          year: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit',
-          hour12: false
+        context.fillStyle = "#ffffff";
+        context.font = "10px monospace";
+        context.textAlign = "right";
+        const timeString = currentTime.toLocaleString("en-US", {
+          month: "2-digit",
+          day: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: false,
         });
         context.fillText(timeString, 290, 370);
-        
+
         const dataUrl = canvas.toDataURL();
         setPhotoDataUrl(dataUrl);
         setHasPhoto(true);
@@ -215,7 +215,7 @@ const Index = () => {
           {/* Title */}
           <div className="text-center space-y-1">
             <h2 className="text-2xl font-styrene font-black text-secondary">
-              {state === "success" ? "zPFP Created" : "Take an Encrypted Photo"}
+              {state === "success" ? "zkPFP Created" : "Take an Encrypted Photo"}
             </h2>
             <p className="text-sm text-secondary">
               {state === "success"
@@ -239,47 +239,44 @@ const Index = () => {
               height="380"
               className={`absolute inset-0 w-full h-full ${hasPhoto ? "hidden" : ""}`}
             />
-            
+
             {/* Face Guide Overlay - only in pre-photo state */}
             {state === "idle" && (
-              <img 
-                src={faceGuide} 
-                alt="Face guide" 
+              <img
+                src={faceGuide}
+                alt="Face guide"
                 className="absolute inset-0 w-full h-full object-contain pointer-events-none opacity-80"
               />
             )}
-            
+
             {/* FPS Counter - only in pre-photo state */}
             {state === "idle" && (
               <div className="absolute top-2 left-2 text-[10px] font-mono text-white bg-black/50 px-2 py-1 rounded">
                 {fps} FPS
               </div>
             )}
-            
+
             {/* Date/Time Display - always visible, gets captured */}
             <div className="absolute bottom-2 right-2 text-[10px] font-mono text-white bg-black/50 px-2 py-1 rounded">
-              {currentTime.toLocaleString('en-US', {
-                month: '2-digit',
-                day: '2-digit',
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
-                hour12: false
+              {currentTime.toLocaleString("en-US", {
+                month: "2-digit",
+                day: "2-digit",
+                year: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+                hour12: false,
               })}
             </div>
-            <canvas
-              ref={canvasRef}
-              width="300"
-              height="380"
-              className="hidden"
-            />
+            <canvas ref={canvasRef} width="300" height="380" className="hidden" />
             {hasPhoto && (
-              <div 
+              <div
                 className="absolute inset-0 night-vision-effect"
-                style={{
-                  '--bg-image': `url(${photoDataUrl})`
-                } as React.CSSProperties}
+                style={
+                  {
+                    "--bg-image": `url(${photoDataUrl})`,
+                  } as React.CSSProperties
+                }
               />
             )}
             {state === "success" && (
@@ -292,12 +289,7 @@ const Index = () => {
                       stroke="currentColor"
                       viewBox="0 0 24 24"
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M5 13l4 4L19 7"
-                      />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
                   </div>
                 </div>
@@ -339,9 +331,9 @@ const Index = () => {
           {/* Success Actions */}
           {state === "success" && (
             <div className="w-full space-y-4">
-              <Button 
+              <Button
                 className="w-full h-12 rounded-2xl btn-primary font-medium text-base"
-                onClick={() => window.open('https://arubaito.app', '_blank')}
+                onClick={() => window.open("https://arubaito.app", "_blank")}
               >
                 Use on Arubaito Profile
               </Button>
@@ -359,14 +351,9 @@ const Index = () => {
           {(state === "encrypting" || state === "minting" || state === "success") && (
             <div className="w-full space-y-2">
               <div className="w-full h-2 bg-muted/20 rounded-full overflow-hidden border border-muted">
-                <div 
-                  className="h-full bg-secondary transition-all duration-300"
-                  style={{ width: `${progress}%` }}
-                />
+                <div className="h-full bg-secondary transition-all duration-300" style={{ width: `${progress}%` }} />
               </div>
-              <p className="text-sm text-center text-secondary font-medium">
-                {getStatusText()}
-              </p>
+              <p className="text-sm text-center text-secondary font-medium">{getStatusText()}</p>
             </div>
           )}
         </div>
@@ -374,10 +361,9 @@ const Index = () => {
         {/* Footer */}
         <div className="relative text-center space-y-4">
           <p className="text-xs text-muted-foreground opacity-70">
-            Your photo never leaves your device. Only the encrypted commitment
-            is used.
+            Your photo never leaves your device. Only the encrypted commitment is used.
           </p>
-          
+
           {/* Security Info */}
           <div className="flex flex-col items-center gap-2 pt-4">
             <p className="text-xs text-muted-foreground">ZK-Snark Secured with</p>
@@ -387,11 +373,11 @@ const Index = () => {
               <img src={solanaLogo} alt="Solana" className="h-8" />
             </div>
           </div>
-          
+
           {/* GitHub Link - Bottom Right */}
-          <a 
-            href="https://github.com/tenshijinn/arubaito" 
-            target="_blank" 
+          <a
+            href="https://github.com/tenshijinn/arubaito"
+            target="_blank"
             rel="noopener noreferrer"
             className="absolute bottom-0 right-0 inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
           >
