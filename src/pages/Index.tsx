@@ -5,6 +5,7 @@ import { Github } from "lucide-react";
 import faceGuide from "@/assets/pfp-guide.png";
 import zcashLogo from "@/assets/zcash-logo.png";
 import solanaLogo from "@/assets/solana-logo.png";
+import zkProfLogo from "@/assets/zkprof-logo.png";
 
 type AppState = "idle" | "photo-taken" | "encrypting" | "minting" | "success";
 
@@ -206,14 +207,14 @@ const Index = () => {
       <div className="w-full max-w-[300px] flex flex-col items-center space-y-8">
         {/* Logo */}
         <div className="self-start">
-          <h1 className="text-2xl font-medium tracking-tight">zkProf</h1>
+          <img src={zkProfLogo} alt="zkProf" className="h-8" />
         </div>
 
         {/* Main Content */}
         <div className="w-full flex flex-col items-center space-y-6">
           {/* Title */}
           <div className="text-center space-y-1">
-            <h2 className="text-2xl font-semibold text-secondary">
+            <h2 className="text-2xl font-styrene font-black text-secondary">
               {state === "success" ? "zPFP Created" : "Take an Encrypted Photo"}
             </h2>
             <p className="text-sm text-secondary">
@@ -312,14 +313,14 @@ const Index = () => {
                   onClick={hasPhoto ? retakePhoto : takePhoto}
                   disabled={state !== "idle" && state !== "photo-taken"}
                   variant="outline"
-                  className="flex-1 h-12 rounded-xl font-medium text-base border-2 border-[#ed565a] text-[#ed565a] hover:bg-transparent hover:border-[#F0E3C3] hover:text-[#F0E3C3]"
+                  className="flex-1 h-12 rounded-xl font-styrene font-black text-base border-2 border-[#ed565a] text-[#ed565a] hover:bg-transparent hover:border-[#F0E3C3] hover:text-[#F0E3C3]"
                 >
                   {hasPhoto ? "Retake Photo" : "Take a Photo"}
                 </Button>
                 <Button
                   onClick={encryptAndMint}
                   disabled={!hasPhoto || state !== "photo-taken"}
-                  className="flex-1 h-12 rounded-xl font-medium text-base bg-secondary text-[#181818] border-2 border-secondary hover:bg-transparent hover:text-[#ed565a] hover:border-[#ed565a] disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 h-12 rounded-xl font-styrene font-black text-base bg-secondary text-[#181818] border-2 border-secondary hover:bg-transparent hover:text-[#ed565a] hover:border-[#ed565a] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Encrypt & Mint
                 </Button>
@@ -371,7 +372,7 @@ const Index = () => {
         </div>
 
         {/* Footer */}
-        <div className="text-center space-y-4">
+        <div className="relative text-center space-y-4">
           <p className="text-xs text-muted-foreground opacity-70">
             Your photo never leaves your device. Only the encrypted commitment
             is used.
@@ -387,12 +388,12 @@ const Index = () => {
             </div>
           </div>
           
-          {/* GitHub Link */}
+          {/* GitHub Link - Bottom Right */}
           <a 
             href="https://github.com/tenshijinn/arubaito" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors pt-2"
+            className="absolute bottom-0 right-0 inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
           >
             <Github size={16} />
             <span>View on GitHub</span>
