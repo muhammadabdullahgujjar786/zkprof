@@ -6,9 +6,7 @@ import faceGuide from "@/assets/pfp-guide.png";
 import zcashLogo from "@/assets/zcash-logo.png";
 import solanaLogo from "@/assets/solana-logo.png";
 import zkProfLogo from "@/assets/zkprof-logo.png";
-
 type AppState = "idle" | "photo-taken" | "encrypting" | "minting" | "success";
-
 const Index = () => {
   const [state, setState] = useState<AppState>("idle");
   const [progress, setProgress] = useState(0);
@@ -20,14 +18,20 @@ const Index = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const pixelationCanvasRef = useRef<HTMLCanvasElement>(null);
-  const fpsCounterRef = useRef({ frames: 0, lastTime: Date.now() });
-
+  const fpsCounterRef = useRef({
+    frames: 0,
+    lastTime: Date.now()
+  });
   useEffect(() => {
     // Initialize camera
     const initCamera = async () => {
       try {
         const mediaStream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: "user", width: 300, height: 380 },
+          video: {
+            facingMode: "user",
+            width: 300,
+            height: 380
+          }
         });
         setStream(mediaStream);
         if (videoRef.current) {
@@ -37,12 +41,10 @@ const Index = () => {
         console.error("Camera access denied:", err);
       }
     };
-
     initCamera();
-
     return () => {
       if (stream) {
-        stream.getTracks().forEach((track) => track.stop());
+        stream.getTracks().forEach(track => track.stop());
       }
     };
   }, []);
@@ -52,38 +54,29 @@ const Index = () => {
     if (!videoRef.current || !pixelationCanvasRef.current || state !== "idle") {
       return;
     }
-
     const video = videoRef.current;
     const canvas = pixelationCanvasRef.current;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-
     let animationFrameId: number;
     const pixelSize = 12;
-
     const applyPixelation = () => {
       if (state !== "idle") return;
-
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
       const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-
       for (let y = 0; y < canvas.height; y += pixelSize) {
         for (let x = 0; x < canvas.width; x += pixelSize) {
           const pixelIndexPosition = (x + y * canvas.width) * 4;
           const r = imageData.data[pixelIndexPosition];
           const g = imageData.data[pixelIndexPosition + 1];
           const b = imageData.data[pixelIndexPosition + 2];
-
           ctx.fillStyle = `rgb(${r},${g},${b})`;
           ctx.fillRect(x, y, pixelSize, pixelSize);
         }
       }
-
       animationFrameId = requestAnimationFrame(applyPixelation);
     };
-
     applyPixelation();
-
     return () => {
       cancelAnimationFrame(animationFrameId);
     };
@@ -92,23 +85,19 @@ const Index = () => {
   // FPS counter
   useEffect(() => {
     if (state !== "idle") return;
-
     const updateFps = () => {
       fpsCounterRef.current.frames++;
       const now = Date.now();
       const delta = now - fpsCounterRef.current.lastTime;
-
       if (delta >= 1000) {
-        setFps(Math.round((fpsCounterRef.current.frames * 1000) / delta));
+        setFps(Math.round(fpsCounterRef.current.frames * 1000 / delta));
         fpsCounterRef.current.frames = 0;
         fpsCounterRef.current.lastTime = now;
       }
-
       if (state === "idle") {
         requestAnimationFrame(updateFps);
       }
     };
-
     const animationId = requestAnimationFrame(updateFps);
     return () => cancelAnimationFrame(animationId);
   }, [state]);
@@ -118,16 +107,13 @@ const Index = () => {
     const interval = setInterval(() => {
       setCurrentTime(new Date());
     }, 1000);
-
     return () => clearInterval(interval);
   }, []);
-
   const takePhoto = () => {
     if (videoRef.current && canvasRef.current) {
       const canvas = canvasRef.current;
       const video = videoRef.current;
       const context = canvas.getContext("2d");
-
       if (context) {
         // Draw the video frame
         context.drawImage(video, 0, 0, 300, 380);
@@ -143,10 +129,9 @@ const Index = () => {
           hour: "2-digit",
           minute: "2-digit",
           second: "2-digit",
-          hour12: false,
+          hour12: false
         });
         context.fillText(timeString, 290, 370);
-
         const dataUrl = canvas.toDataURL();
         setPhotoDataUrl(dataUrl);
         setHasPhoto(true);
@@ -154,7 +139,6 @@ const Index = () => {
       }
     }
   };
-
   const retakePhoto = () => {
     setHasPhoto(false);
     setPhotoDataUrl("");
@@ -167,28 +151,24 @@ const Index = () => {
       }
     }
   };
-
   const encryptAndMint = async () => {
     setState("encrypting");
     setProgress(0);
 
     // Simulate encryption phase
     for (let i = 0; i <= 50; i += 2) {
-      await new Promise((resolve) => setTimeout(resolve, 30));
+      await new Promise(resolve => setTimeout(resolve, 30));
       setProgress(i);
     }
-
     setState("minting");
 
     // Simulate minting phase
     for (let i = 50; i <= 100; i += 2) {
-      await new Promise((resolve) => setTimeout(resolve, 30));
+      await new Promise(resolve => setTimeout(resolve, 30));
       setProgress(i);
     }
-
     setState("success");
   };
-
   const getStatusText = () => {
     switch (state) {
       case "encrypting":
@@ -201,9 +181,7 @@ const Index = () => {
         return "";
     }
   };
-
-  return (
-    <div className="min-h-screen flex flex-col">
+  return <div className="min-h-screen flex flex-col">
       {/* Header */}
       <div className="w-full flex justify-end px-8 py-6">
         <img src={zkProfLogo} alt="zkProf" className="h-8" />
@@ -221,43 +199,22 @@ const Index = () => {
               {state === "success" ? "zkPFP Created" : "Take an Encrypted Photo"}
             </h2>
             <p className="text-sm text-secondary">
-              {state === "success"
-                ? "Your encrypted profile photo is ready"
-                : "Permit decrypt to any entity with ZK + NDA"}
+              {state === "success" ? "Your encrypted profile photo is ready" : "Permit decrypt to any entity with ZK + NDA"}
             </p>
           </div>
 
           {/* Camera Preview */}
           <div className="relative camera-preview w-[300px] h-[380px] bg-muted/20">
-            <video
-              ref={videoRef}
-              autoPlay
-              playsInline
-              muted
-              className={`w-full h-full object-cover ${hasPhoto ? "hidden" : ""}`}
-            />
-            <canvas
-              ref={pixelationCanvasRef}
-              width="300"
-              height="380"
-              className={`absolute inset-0 w-full h-full ${hasPhoto ? "hidden" : ""}`}
-            />
+            <video ref={videoRef} autoPlay playsInline muted className={`w-full h-full object-cover ${hasPhoto ? "hidden" : ""}`} />
+            <canvas ref={pixelationCanvasRef} width="300" height="380" className={`absolute inset-0 w-full h-full ${hasPhoto ? "hidden" : ""}`} />
 
             {/* Face Guide Overlay - only in pre-photo state */}
-            {state === "idle" && (
-              <img
-                src={faceGuide}
-                alt="Face guide"
-                className="absolute inset-0 w-full h-full object-contain pointer-events-none opacity-80"
-              />
-            )}
+            {state === "idle" && <img src={faceGuide} alt="Face guide" className="absolute inset-0 w-full h-full object-contain pointer-events-none opacity-80" />}
 
             {/* FPS Counter - only in pre-photo state */}
-            {state === "idle" && (
-              <div className="absolute top-2 left-2 text-[10px] font-mono text-white bg-black/50 px-2 py-1 rounded">
+            {state === "idle" && <div className="absolute top-2 left-2 text-[10px] font-mono text-white bg-black/50 px-2 py-1 rounded">
                 {fps} FPS
-              </div>
-            )}
+              </div>}
 
             {/* Date/Time Display - always visible, gets captured */}
             <div className="absolute bottom-2 right-2 text-[10px] font-mono text-white bg-black/50 px-2 py-1 rounded">
@@ -268,97 +225,61 @@ const Index = () => {
                 hour: "2-digit",
                 minute: "2-digit",
                 second: "2-digit",
-                hour12: false,
+                hour12: false
               })}
             </div>
             <canvas ref={canvasRef} width="300" height="380" className="hidden" />
-            {hasPhoto && (
-              <div
-                className="absolute inset-0 night-vision-effect"
-                style={
-                  {
-                    "--bg-image": `url(${photoDataUrl})`,
-                  } as React.CSSProperties
-                }
-              />
-            )}
-            {state === "success" && (
-              <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+            {hasPhoto && <div className="absolute inset-0 night-vision-effect" style={{
+              "--bg-image": `url(${photoDataUrl})`
+            } as React.CSSProperties} />}
+            {state === "success" && <div className="absolute inset-0 flex items-center justify-center bg-black/40">
                 <div className="text-center space-y-2">
                   <div className="w-16 h-16 mx-auto rounded-full bg-primary flex items-center justify-center">
-                    <svg
-                      className="w-8 h-8 text-primary-foreground"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
+                    <svg className="w-8 h-8 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
                   </div>
                 </div>
-              </div>
-            )}
+              </div>}
           </div>
 
           {/* Buttons */}
-          {state !== "success" && (
-            <div className="w-[300px] space-y-3">
+          {state !== "success" && <div className="w-[300px] space-y-3">
               <div className="flex gap-3">
-                <Button
-                  onClick={hasPhoto ? retakePhoto : takePhoto}
-                  disabled={state !== "idle" && state !== "photo-taken"}
-                  variant="outline"
-                  className="flex-1 h-12 rounded-xl font-styrene font-black text-base border-2 border-[#ed565a] text-[#ed565a] hover:bg-transparent hover:border-[#F0E3C3] hover:text-[#F0E3C3]"
-                >
+                <Button onClick={hasPhoto ? retakePhoto : takePhoto} disabled={state !== "idle" && state !== "photo-taken"} variant="outline" className="flex-1 h-12 rounded-xl font-styrene font-black text-base border-2 border-[#ed565a] text-[#ed565a] hover:bg-transparent hover:border-[#F0E3C3] hover:text-[#F0E3C3]">
                   {hasPhoto ? "Retake Photo" : "Take a Photo"}
                 </Button>
-                <Button
-                  onClick={encryptAndMint}
-                  disabled={!hasPhoto || state !== "photo-taken"}
-                  className="flex-1 h-12 rounded-xl font-styrene font-black text-base bg-secondary text-[#181818] border-2 border-secondary hover:bg-transparent hover:text-[#ed565a] hover:border-[#ed565a] disabled:opacity-50 disabled:cursor-not-allowed"
-                >
+                <Button onClick={encryptAndMint} disabled={!hasPhoto || state !== "photo-taken"} className="flex-1 h-12 rounded-xl font-styrene font-black text-base bg-secondary text-[#181818] border-2 border-secondary hover:bg-transparent hover:text-[#ed565a] hover:border-[#ed565a] disabled:opacity-50 disabled:cursor-not-allowed">
                   Encrypt & Mint
                 </Button>
               </div>
-              {hasPhoto && state === "photo-taken" && (
-                <div className="flex items-center justify-center gap-2 text-accent text-sm font-medium">
+              {hasPhoto && state === "photo-taken" && <div className="flex items-center justify-center gap-2 text-accent text-sm font-medium">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
                   </svg>
                   Uploaded
-                </div>
-              )}
-            </div>
-          )}
+                </div>}
+            </div>}
 
           {/* Success Actions */}
-          {state === "success" && (
-            <div className="w-full space-y-4">
-              <Button
-                className="w-full h-12 rounded-2xl btn-primary font-styrene font-black text-base text-[#181818]"
-                onClick={() => window.open("https://arubaito.app", "_blank")}
-              >
+          {state === "success" && <div className="w-full space-y-4">
+              <Button className="w-full h-12 rounded-2xl btn-primary font-styrene font-black text-base text-[#181818]" onClick={() => window.open("https://arubaito.app", "_blank")}>
                 Use on Arubaito Profile
               </Button>
-              <Button
-                variant="ghost"
-                className="w-full h-12 rounded-2xl font-styrene font-black text-base text-muted-foreground hover:text-foreground"
-                onClick={() => window.location.reload()}
-              >
-                Done
+              <Button variant="ghost" onClick={() => window.location.reload()} className="w-full h-12 rounded-2xl font-styrene font-black text-base text-foreground">
+                Restart
               </Button>
-            </div>
-          )}
+            </div>}
 
           {/* Progress Bar */}
-          {(state === "encrypting" || state === "minting" || state === "success") && (
-            <div className="w-full space-y-2">
+          {(state === "encrypting" || state === "minting" || state === "success") && <div className="w-full space-y-2">
               <div className="w-full h-2 bg-muted/20 rounded-full overflow-hidden border border-muted">
-                <div className="h-full bg-secondary transition-all duration-300" style={{ width: `${progress}%` }} />
+                <div className="h-full bg-secondary transition-all duration-300" style={{
+                width: `${progress}%`
+              }} />
               </div>
               <p className="text-sm text-center text-secondary font-medium">{getStatusText()}</p>
-            </div>
-          )}
+            </div>}
         </div>
 
         {/* Footer */}
@@ -382,18 +303,11 @@ const Index = () => {
 
       {/* Footer */}
       <div className="w-full flex justify-start px-8 py-6">
-        <a
-          href="https://github.com/tenshijinn/arubaito"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
-        >
+        <a href="https://github.com/tenshijinn/arubaito" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors">
           <Github size={16} />
           <span>View on GitHub</span>
         </a>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
