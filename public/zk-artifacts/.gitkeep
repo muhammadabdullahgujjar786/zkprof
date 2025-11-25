@@ -1,0 +1,29 @@
+# ZK-SNARK Artifacts Directory
+
+This directory will contain the generated ZK-SNARK artifacts:
+
+- `zkpfp.wasm` - Witness calculator (compiled circuit)
+- `zkpfp_final.zkey` - Proving key for generating proofs
+- `verification_key.json` - Verification key for verifying proofs
+
+## Generating Artifacts
+
+See `scripts/generate-zk-artifacts.md` for detailed instructions on generating these files.
+
+## Required Files
+
+Before the ZK-SNARK functionality will work, you must:
+
+1. Install circom and circomlib
+2. Compile the circuit in `circuits/zkpfp.circom`
+3. Run the Powers of Tau ceremony
+4. Generate proving and verification keys
+5. Copy the artifacts to this directory
+
+## File Sizes
+
+- `zkpfp.wasm`: ~500KB - 2MB
+- `zkpfp_final.zkey`: ~5-20MB
+- `verification_key.json`: ~1KB
+
+These files are large and should be hosted on a CDN in production.

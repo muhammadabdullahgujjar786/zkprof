@@ -11,11 +11,14 @@ const encodeBase64 = (arr: Uint8Array): string => {
   return btoa(binary);
 };
 
+import { generateZKProof, ZKProofResult } from './zkproof';
+
 export interface EncryptionResult {
   encryptedData: string;
   encryptedKey: string;
   iv: string;
   commitment: string;
+  zkProof?: ZKProofResult; // ZK-SNARK proof of encryption
 }
 
 export async function encryptImage(
@@ -65,10 +68,23 @@ export async function encryptImage(
   const commitmentHash = await crypto.subtle.digest('SHA-256', commitmentInput);
   const commitment = encodeBase64(new Uint8Array(commitmentHash));
 
+  // Generate ZK-SNARK proof (proves knowledge of key without revealing it)
+  let zkProof: ZKProofResult | undefined;
+  try {
+    console.log('Generating ZK-SNARK proof...');
+    zkProof = await generateZKProof(symmetricKey, iv, recipientPublicKey);
+    console.log('ZK-SNARK proof generated successfully');
+  } catch (error) {
+    console.warn('ZK-SNARK proof generation failed, falling back to commitment-only:', error);
+    // Continue without ZK proof - commitment is still secure
+    // This allows the app to function even if ZK artifacts aren't available yet
+  }
+
   return {
     encryptedData: encodeBase64(encryptedData),
     encryptedKey: encodeBase64(encryptedKey),
     iv: encodeBase64(iv),
-    commitment
+    commitment,
+    zkProof
   };
 }
