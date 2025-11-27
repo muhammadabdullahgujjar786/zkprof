@@ -11,7 +11,7 @@ const encodeBase64 = (arr: Uint8Array): string => {
   return btoa(binary);
 };
 
-import { generateZKProof, ZKProofResult } from './zkproof';
+import { generateZKProof, serializeProof, ZKProofResult, ZKProofProgressCallback } from './zkproof';
 
 export interface EncryptionResult {
   encryptedData: string;
@@ -23,7 +23,8 @@ export interface EncryptionResult {
 
 export async function encryptImage(
   imageDataUrl: string,
-  recipientPublicKey: string
+  recipientPublicKey: string,
+  onZKProgress?: ZKProofProgressCallback
 ): Promise<EncryptionResult> {
   // Convert data URL to blob
   const response = await fetch(imageDataUrl);
@@ -72,7 +73,7 @@ export async function encryptImage(
   let zkProof: ZKProofResult | undefined;
   try {
     console.log('Generating ZK-SNARK proof...');
-    zkProof = await generateZKProof(symmetricKey, iv, recipientPublicKey);
+    zkProof = await generateZKProof(symmetricKey, iv, recipientPublicKey, onZKProgress);
     console.log('ZK-SNARK proof generated successfully');
   } catch (error) {
     console.warn('ZK-SNARK proof generation failed, falling back to commitment-only:', error);

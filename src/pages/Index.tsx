@@ -50,6 +50,8 @@ const Index = () => {
   const { publicKey, signTransaction, connected } = useWallet();
   const [state, setState] = useState<AppState>("idle");
   const [progress, setProgress] = useState(0);
+  const [zkProgress, setZKProgress] = useState(0);
+  const [zkProgressMessage, setZKProgressMessage] = useState("");
   const [hasPhoto, setHasPhoto] = useState(false);
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [photoDataUrl, setPhotoDataUrl] = useState("");
@@ -262,10 +264,15 @@ const Index = () => {
     try {
       setState("encrypting");
       setProgress(10);
+      setZKProgress(0);
+      setZKProgressMessage("");
 
       // 1. Encrypt the image
       const publicKeyBase64 = publicKey.toBase58();
-      const encryption = await encryptImage(photoDataUrl, publicKeyBase64);
+      const encryption = await encryptImage(photoDataUrl, publicKeyBase64, (message, progress) => {
+        setZKProgressMessage(message);
+        setZKProgress(progress);
+      });
       setProgress(25);
 
       // 2. Convert encrypted data to blob for upload
@@ -631,6 +638,25 @@ const Index = () => {
 
           {/* Progress Bar */}
           {(state === "encrypting" || state === "minting" || state === "success") && <div className="w-full space-y-2">
+              {/* ZK-SNARK Progress Indicator */}
+              {state === "encrypting" && zkProgressMessage && (
+                <div className="w-full space-y-2 mb-4 p-3 bg-[#3a3a3a]/50 rounded-lg border border-[#3a3a3a]">
+                  <div className="flex items-center gap-2 mb-1">
+                    <svg className="w-4 h-4 text-secondary animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    <span className="text-xs font-mono text-secondary font-bold">ZK-SNARK Proof Generation</span>
+                  </div>
+                  <div className="w-full h-1.5 bg-black/30 rounded-full overflow-hidden">
+                    <div className="h-full bg-secondary transition-all duration-300" style={{
+                      width: `${zkProgress}%`
+                    }} />
+                  </div>
+                  <p className="text-[10px] text-muted-foreground font-mono">{zkProgressMessage}</p>
+                </div>
+              )}
+              
+              {/* Main Progress Bar */}
               <div className="w-full h-2 bg-muted/20 rounded-full overflow-hidden border border-muted">
                 <div className="h-full bg-secondary transition-all duration-300" style={{
                 width: `${progress}%`
