@@ -17,6 +17,8 @@ export interface ZKProofResult {
   walletPubKey: string;
 }
 
+export type ZKProofProgressCallback = (step: string, progress: number) => void;
+
 /**
  * Generate a ZK-SNARK proof that proves knowledge of encryption key
  * without revealing the key itself
@@ -24,9 +26,12 @@ export interface ZKProofResult {
 export async function generateZKProof(
   symmetricKey: Uint8Array,
   iv: Uint8Array,
-  walletPublicKey: string
+  walletPublicKey: string,
+  onProgress?: ZKProofProgressCallback
 ): Promise<ZKProofResult> {
   try {
+    onProgress?.('Preparing cryptographic inputs...', 0);
+    
     // Convert wallet public key to byte array
     const walletPubKeyBytes = Array.from(
       new Uint8Array(Buffer.from(walletPublicKey, 'base64'))
@@ -39,8 +44,11 @@ export async function generateZKProof(
       walletPubKey: walletPubKeyBytes,
     };
 
+    onProgress?.('Loading ZK-SNARK circuit artifacts...', 20);
     console.log('Generating ZK-SNARK proof...');
 
+    onProgress?.('Computing cryptographic witness...', 40);
+    
     // Generate witness and proof
     const { proof, publicSignals } = await groth16.fullProve(
       input,
@@ -48,7 +56,10 @@ export async function generateZKProof(
       '/zk-artifacts/zkpfp_final.zkey'
     );
 
+    onProgress?.('Generating zero-knowledge proof...', 80);
     console.log('ZK-SNARK proof generated successfully');
+
+    onProgress?.('ZK-SNARK proof complete!', 100);
 
     return {
       proof: proof as ZKProof,
