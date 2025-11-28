@@ -22,7 +22,7 @@ const Landing = () => {
     <div className="min-h-screen bg-background text-foreground flex items-center justify-center px-8">
       <div className="max-w-7xl w-full grid md:grid-cols-2 gap-12 items-center">
         {/* Left: Parallax Image */}
-        <div className="relative aspect-square max-w-[600px] mx-auto overflow-hidden rounded-3xl">
+        <div className="relative aspect-square w-full max-w-[600px] mx-auto overflow-hidden rounded-3xl">
           {/* Bottom layer - encrypted version (always visible) */}
           <img 
             src={zkprofEncrypt} 
