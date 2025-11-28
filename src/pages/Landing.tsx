@@ -19,10 +19,25 @@ const Landing = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex items-center justify-center px-8">
-      <div className="max-w-7xl w-full grid md:grid-cols-2 gap-12 items-center">
-        {/* Left: Parallax Image */}
-        <div className="relative aspect-square w-full max-w-[600px] mx-auto overflow-hidden rounded-3xl">
+    <div className="min-h-screen bg-background text-foreground flex items-end justify-center px-8 pb-0">
+      <div className="w-full max-w-7xl flex items-end justify-center gap-12 pb-8">
+        {/* Left: Content */}
+        <div className="space-y-8 mb-auto mt-auto">
+          <h1 className="text-5xl md:text-6xl font-styrene font-black leading-tight max-w-xl">
+            Dox Yourself Privately with{" "}
+            <span className="text-primary">Zero Knowledge</span>{" "}
+            Profile Picture.
+          </h1>
+          
+          <Link to="/take-photo">
+            <Button className="h-14 px-8 rounded-2xl btn-primary font-styrene font-black text-lg text-[#181818] hover:bg-primary/90">
+              Take a zK Picture
+            </Button>
+          </Link>
+        </div>
+
+        {/* Center: Parallax Image - Fixed to bottom */}
+        <div className="relative aspect-square w-full max-w-[600px] overflow-hidden rounded-3xl">
           {/* Bottom layer - encrypted version (always visible) */}
           <img 
             src={zkprofEncrypt} 
@@ -43,21 +58,6 @@ const Landing = () => {
               className="w-full h-full object-cover"
             />
           </div>
-        </div>
-
-        {/* Right: Content */}
-        <div className="space-y-8">
-          <h1 className="text-5xl md:text-6xl font-styrene font-black leading-tight">
-            Dox Yourself Privately with{" "}
-            <span className="text-primary">Zero Knowledge</span>{" "}
-            Profile Picture.
-          </h1>
-          
-          <Link to="/take-photo">
-            <Button className="h-14 px-8 rounded-2xl btn-primary font-styrene font-black text-lg text-[#181818] hover:bg-primary/90">
-              Take a zK Picture
-            </Button>
-          </Link>
         </div>
       </div>
     </div>
