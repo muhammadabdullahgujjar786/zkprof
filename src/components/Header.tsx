@@ -7,7 +7,7 @@ import zkProfLogo from "@/assets/zkprof-logo.png";
 import { Button } from "@/components/ui/button";
 
 interface HeaderProps {
-  currentPage?: "take-photo" | "zkpfps" | "how-to-use";
+  currentPage?: "take-photo" | "zkpfps" | "how-to-use" | "manage-sharing";
   walletBalance?: number | null;
   solPrice?: number | null;
 }
@@ -41,6 +41,14 @@ export function Header({ currentPage = "take-photo", walletBalance, solPrice }: 
             }`}
           >
             zkPFPs
+          </Link>
+          <Link 
+            to="/manage-sharing" 
+            className={`text-sm transition-colors ${
+              currentPage === "manage-sharing" ? "text-[#ed565a]" : "text-foreground hover:text-[#ed565a]"
+            }`}
+          >
+            Manage Sharing
           </Link>
           <Link 
             to="/how-to-use" 
@@ -103,6 +111,15 @@ export function Header({ currentPage = "take-photo", walletBalance, solPrice }: 
               onClick={() => setMobileMenuOpen(false)}
             >
               zkPFPs
+            </Link>
+            <Link 
+              to="/manage-sharing" 
+              className={`text-sm transition-colors ${
+                currentPage === "manage-sharing" ? "text-[#ed565a]" : "text-foreground hover:text-[#ed565a]"
+              }`}
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Manage Sharing
             </Link>
             <Link 
               to="/how-to-use" 
