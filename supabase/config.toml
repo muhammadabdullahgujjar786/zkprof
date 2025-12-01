@@ -2,3 +2,15 @@ project_id = "chfqfdxpccxfmonhitjd"
 
 [functions.get-sol-price]
 verify_jwt = false
+
+[functions.register-platform]
+verify_jwt = false
+
+[functions.platform-balance]
+verify_jwt = false
+
+[functions.grant-access]
+verify_jwt = false
+
+[functions.revoke-access]
+verify_jwt = false
