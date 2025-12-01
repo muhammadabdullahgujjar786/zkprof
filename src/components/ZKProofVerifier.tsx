@@ -23,18 +23,40 @@ export function ZKProofVerifier({ proofData, publicSignals, commitment }: ZKProo
     setVerificationStatus('verifying');
     
     try {
+      console.log('🔍 ZKProofVerifier: Starting verification...');
+      console.log('📦 Raw proof data:', proofData);
+      console.log('📊 Raw public signals:', publicSignals);
+      console.log('🔑 Commitment:', commitment);
+      
       const proof = deserializeProof(proofData);
-      const isValid = await verifyZKProof(proof, publicSignals);
+      console.log('✅ Deserialized proof:', proof);
+      
+      // Validate proof structure
+      if (!proof.pi_a || !proof.pi_b || !proof.pi_c) {
+        throw new Error('Invalid proof structure: missing pi_a, pi_b, or pi_c');
+      }
+      
+      // Ensure publicSignals are strings (snarkjs expects strings)
+      const signalsAsStrings = publicSignals.map(s => String(s));
+      console.log('📝 Public signals as strings:', signalsAsStrings);
+      console.log('📏 Signal count:', signalsAsStrings.length);
+      
+      const isValid = await verifyZKProof(proof, signalsAsStrings);
       
       setVerificationStatus(isValid ? 'valid' : 'invalid');
       
       if (isValid) {
         toast.success('ZK-SNARK proof verified! This zkPFP is cryptographically authentic.');
       } else {
-        toast.error('ZK-SNARK proof verification failed. This zkPFP may be invalid.');
+        console.warn('⚠️ Verification failed - possible causes:');
+        console.warn('1. Verification key mismatch (not generated from current .zkey)');
+        console.warn('2. Proof generated with different circuit parameters');
+        console.warn('3. Public signals don\'t match proof');
+        toast.error('ZK-SNARK proof verification failed. This may be a legacy proof or key mismatch.');
       }
     } catch (error) {
-      console.error('Verification error:', error);
+      console.error('❌ Verification error:', error);
+      console.error('Error stack:', error instanceof Error ? error.stack : 'N/A');
       setVerificationStatus('invalid');
       toast.error('Failed to verify proof: ' + (error as Error).message);
     }
