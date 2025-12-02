@@ -9,7 +9,9 @@ import { toast } from "sonner";
 import { ZKProofVerifier } from "@/components/ZKProofVerifier";
 import { Link } from "react-router-dom";
 import { Header } from "@/components/Header";
+import { MobileBottomNav } from "@/components/MobileBottomNav";
 import aruaitoLogo from "@/assets/arubaito-logo.png";
+import privacyIcon from "@/assets/privacy.png";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ProtectedImageReveal } from "@/components/ProtectedImageReveal";
 import { decryptImage } from "@/lib/crypto";
@@ -134,7 +136,7 @@ const ZkPFPs = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col pb-20 md:pb-0">
       <Header currentPage="zkpfps" walletBalance={walletBalance} solPrice={solPrice} />
 
       {/* Main Content */}
@@ -164,13 +166,13 @@ const ZkPFPs = () => {
               </Link>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {mintedNFTs.map((nft) => (
                 <Card key={nft.id} className="bg-muted/20 border-border overflow-hidden">
                   <div className="aspect-square bg-muted/40 flex items-center justify-center">
                     <div className="text-center p-4">
                       <div className="text-xs text-muted-foreground mb-2">Encrypted Photo</div>
-                      <div className="text-2xl">🔒</div>
+                      <img src={privacyIcon} alt="Encrypted" className="w-12 h-12 mx-auto opacity-60" />
                     </div>
                   </div>
                   <div className="p-4 space-y-3">
@@ -254,8 +256,8 @@ const ZkPFPs = () => {
         </div>
       </div>
 
-      {/* Footer */}
-      <div className="w-full flex justify-between items-center px-8 py-6 mt-auto">
+      {/* Footer - Hidden on mobile */}
+      <div className="hidden md:flex w-full justify-between items-center px-8 py-6 mt-auto">
         <div className="flex items-center gap-2">
           <span className="text-xs text-muted-foreground">zkProf by</span>
           <a href="https://arubaito.app" target="_blank" rel="noopener noreferrer">
@@ -272,6 +274,9 @@ const ZkPFPs = () => {
           <span>View on GitHub</span>
         </a>
       </div>
+
+      {/* Mobile Bottom Navigation */}
+      <MobileBottomNav />
 
       {/* Decrypt Modal */}
       <Dialog open={isDecryptModalOpen} onOpenChange={closeDecryptModal}>
