@@ -9,8 +9,9 @@ import { Link } from "react-router-dom";
 import { Header } from "@/components/Header";
 import aruaitoLogo from "@/assets/arubaito-logo.png";
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
-import { Connection, PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL, sendAndConfirmTransaction } from '@solana/web3.js';
+import { Connection, PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL, TransactionInstruction } from '@solana/web3.js';
 import { createBurnInstruction, TOKEN_PROGRAM_ID } from '@solana/spl-token';
+import { createMemoInstruction } from '@solana/spl-memo';
 import { encryptImage } from "@/lib/crypto";
 import { serializeProof } from "@/lib/zkproof";
 import { supabase } from "@/integrations/supabase/client";
@@ -336,12 +337,19 @@ const Index = () => {
       
       const recipientPubkey = new PublicKey(RECIPIENT_ADDRESS);
       
+      // Create memo content for on-chain proof
+      const timestamp = Date.now();
+      const memoContent = `zkpfp:${encryption.commitment}:${timestamp}`;
+      
       const transaction = new Transaction().add(
+        // Payment transfer
         SystemProgram.transfer({
           fromPubkey: publicKey,
           toPubkey: recipientPubkey,
           lamports: Math.floor(solAmount * LAMPORTS_PER_SOL)
-        })
+        }),
+        // On-chain memo proof of zkPFP creation
+        createMemoInstruction(memoContent, [publicKey])
       );
 
       const { blockhash } = await connection.getLatestBlockhash();
@@ -355,10 +363,9 @@ const Index = () => {
       toast.success(`Payment successful: ${solAmount.toFixed(6)} SOL ($${PAYMENT_AMOUNT_USD})`);
       setProgress(80);
 
-      // 7. Create NFT record (on-chain minting requires backend infrastructure)
-      // For now, storing commitment hash as proof-of-encryption
+      // 7. Create NFT record with on-chain proof reference
       const mintAddr = `zkpfp-${blobId}`;
-      const metadataUri = `zkpfp:commitment:${encryption.commitment}`;
+      const metadataUri = `zkpfp:commitment:${encryption.commitment}:tx:${signature}`;
       
       const { error: mintError } = await supabase
         .from('nft_mints')
@@ -374,11 +381,11 @@ const Index = () => {
 
       if (mintError) throw mintError;
       
-      setMintAddress(mintAddr);
+      setMintAddress(signature); // Store the actual on-chain transaction signature
       setProgress(100);
       setState("success");
       toast.dismiss();
-      toast.success("zkPFP successfully minted on-chain!");
+      toast.success("zkPFP created with on-chain proof!");
 
     } catch (error) {
       console.error("Encryption/minting error:", error);
@@ -633,6 +640,19 @@ const Index = () => {
                   See zkPFP Verification
                 </Button>
               </Link>
+              {mintAddress && (
+                <a 
+                  href={`https://explorer.solana.com/tx/${mintAddress}?cluster=${import.meta.env.VITE_SOLANA_RPC_ENDPOINT?.includes('devnet') ? 'devnet' : 'mainnet'}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full block"
+                >
+                  <Button variant="outline" className="w-full h-12 rounded-2xl font-styrene font-black text-base border-2 border-[#ed565a] text-[#ed565a] hover:bg-transparent hover:border-[#F0E3C3] hover:text-[#F0E3C3]">
+                    <ExternalLink className="w-4 h-4 mr-2" />
+                    View On-Chain Proof
+                  </Button>
+                </a>
+              )}
               <Button variant="ghost" onClick={() => window.location.reload()} className="w-full h-12 rounded-2xl font-styrene font-black text-base text-foreground hover:bg-[#e4dac2] hover:text-[#181818]">
                 Restart
               </Button>
