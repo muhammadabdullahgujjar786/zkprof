@@ -52,16 +52,13 @@ const ZkPFPs = () => {
   const burnNFT = async (nftId: string) => {
     try {
       toast.loading("Removing zkPFP...");
-      
-      const { error } = await supabase
-        .from("nft_mints")
-        .delete()
-        .eq("id", nftId);
+
+      const { error } = await supabase.from("nft_mints").delete().eq("id", nftId);
 
       if (error) throw error;
 
       setMintedNFTs((prev) => prev.filter((nft) => nft.id !== nftId));
-      
+
       toast.dismiss();
       toast.success("zkPFP removed successfully");
     } catch (error) {
@@ -104,7 +101,7 @@ const ZkPFPs = () => {
       // Convert blob to base64
       const arrayBuffer = await blobData.arrayBuffer();
       const bytes = new Uint8Array(arrayBuffer);
-      let binary = '';
+      let binary = "";
       for (let i = 0; i < bytes.length; i++) {
         binary += String.fromCharCode(bytes[i]);
       }
@@ -115,7 +112,7 @@ const ZkPFPs = () => {
         encryptedDataBase64,
         photoData.encrypted_key,
         photoData.iv,
-        publicKey.toBase58()
+        publicKey.toBase58(),
       );
 
       setDecryptedImage(decryptedDataUrl);
@@ -142,19 +139,13 @@ const ZkPFPs = () => {
       <div className="flex-1 flex flex-col items-center justify-center px-4 py-12">
         <div className="w-full max-w-6xl">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-styrene font-black text-secondary mb-2">
-              Your zkPFPs
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              View and manage your encrypted profile photos
-            </p>
+            <h1 className="text-3xl font-styrene font-black text-secondary mb-2">Your zkPFPs</h1>
+            <p className="text-sm text-muted-foreground">View and manage your encrypted profile photos</p>
           </div>
 
           {!connected ? (
             <div className="text-center py-12">
-              <p className="text-muted-foreground mb-6">
-                Connect your wallet to view your zkPFPs
-              </p>
+              <p className="text-muted-foreground mb-6">Connect your wallet to view your zkPFPs</p>
               <WalletMultiButton className="!h-12 !rounded-xl !font-styrene !font-black !text-base !bg-secondary !text-[#181818] !border-2 !border-secondary hover:!bg-transparent hover:!text-[#ed565a] hover:!border-[#ed565a]" />
             </div>
           ) : loading ? (
@@ -163,13 +154,9 @@ const ZkPFPs = () => {
             </div>
           ) : mintedNFTs.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-muted-foreground mb-6">
-                You haven't created any zkPFPs yet
-              </p>
+              <p className="text-muted-foreground mb-6">You haven't created any zkPFPs yet</p>
               <Link to="/">
-                <Button
-                  className="h-12 rounded-xl font-styrene font-black text-base bg-secondary text-[#181818] border-2 border-secondary hover:bg-transparent hover:text-[#ed565a] hover:border-[#ed565a]"
-                >
+                <Button className="h-12 rounded-xl font-styrene font-black text-base bg-secondary text-[#181818] border-2 border-secondary hover:bg-transparent hover:text-[#ed565a] hover:border-[#ed565a]">
                   Create Your First zkPFP
                 </Button>
               </Link>
@@ -177,15 +164,10 @@ const ZkPFPs = () => {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {mintedNFTs.map((nft) => (
-                <Card
-                  key={nft.id}
-                  className="bg-muted/20 border-border overflow-hidden"
-                >
+                <Card key={nft.id} className="bg-muted/20 border-border overflow-hidden">
                   <div className="aspect-square bg-muted/40 flex items-center justify-center">
                     <div className="text-center p-4">
-                      <div className="text-xs text-muted-foreground mb-2">
-                        Encrypted Photo
-                      </div>
+                      <div className="text-xs text-muted-foreground mb-2">Encrypted Photo</div>
                       <div className="text-2xl">🔒</div>
                     </div>
                   </div>
@@ -197,7 +179,7 @@ const ZkPFPs = () => {
                         year: "numeric",
                       })}
                     </div>
-                    
+
                     {nft.zk_proof && nft.zk_public_signals && (
                       <ZKProofVerifier
                         proofData={nft.zk_proof}
@@ -205,31 +187,27 @@ const ZkPFPs = () => {
                         commitment={nft.metadata_uri}
                       />
                     )}
-                    
+
                     {/* ZK Transaction Details */}
                     <div className="space-y-1 text-xs">
                       <div className="text-muted-foreground">
                         <span className="font-semibold">Commitment:</span>
                         <div className="font-mono text-[10px] break-all">
-                          {nft.metadata_uri.replace('https://arweave.net/', '').replace('zkpfp:commitment:', '')}
+                          {nft.metadata_uri.replace("https://arweave.net/", "").replace("zkpfp:commitment:", "")}
                         </div>
                       </div>
                       {nft.mint_address && (
                         <div className="text-muted-foreground">
                           <span className="font-semibold">Mint:</span>
-                          <div className="font-mono text-[10px] break-all">
-                            {nft.mint_address}
-                          </div>
+                          <div className="font-mono text-[10px] break-all">{nft.mint_address}</div>
                         </div>
                       )}
                       <div className="text-muted-foreground">
                         <span className="font-semibold">Signature:</span>
-                        <div className="font-mono text-[10px] break-all">
-                          {nft.payment_signature}
-                        </div>
+                        <div className="font-mono text-[10px] break-all">{nft.payment_signature}</div>
                       </div>
                     </div>
-                    
+
                     <div className="flex flex-col gap-2">
                       <Button
                         variant="outline"
@@ -246,10 +224,7 @@ const ZkPFPs = () => {
                           size="sm"
                           className="flex-1 text-xs"
                           onClick={() =>
-                            window.open(
-                              `https://explorer.solana.com/tx/${nft.payment_signature}`,
-                              "_blank"
-                            )
+                            window.open(`https://explorer.solana.com/tx/${nft.payment_signature}`, "_blank")
                           }
                         >
                           <ExternalLink className="h-3 w-3 mr-1" />
@@ -282,7 +257,12 @@ const ZkPFPs = () => {
             <img src={aruaitoLogo} alt="Arubaito" className="h-4" />
           </a>
         </div>
-        <a href="https://github.com/tenshijinn/arubaito" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors">
+        <a
+          href="https://github.com/tenshijinn/zkprof"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
+        >
           <Github size={16} />
           <span>View on GitHub</span>
         </a>
@@ -292,9 +272,7 @@ const ZkPFPs = () => {
       <Dialog open={isDecryptModalOpen} onOpenChange={closeDecryptModal}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="font-styrene font-black text-xl">
-              Protected zkPFP Preview
-            </DialogTitle>
+            <DialogTitle className="font-styrene font-black text-xl">Protected zkPFP Preview</DialogTitle>
           </DialogHeader>
           {isDecrypting ? (
             <div className="flex items-center justify-center py-20">

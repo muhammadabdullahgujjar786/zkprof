@@ -2,16 +2,23 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Github, Wallet, Trash2, ExternalLink, ChevronDown } from "lucide-react";
-import { useConnection, useWallet } from '@solana/wallet-adapter-react';
+import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
 import { Header } from "@/components/Header";
 import aruaitoLogo from "@/assets/arubaito-logo.png";
-import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
-import { Connection, PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL, TransactionInstruction } from '@solana/web3.js';
-import { createBurnInstruction, TOKEN_PROGRAM_ID } from '@solana/spl-token';
-import { createMemoInstruction } from '@solana/spl-memo';
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
+import {
+  Connection,
+  PublicKey,
+  Transaction,
+  SystemProgram,
+  LAMPORTS_PER_SOL,
+  TransactionInstruction,
+} from "@solana/web3.js";
+import { createBurnInstruction, TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import { createMemoInstruction } from "@solana/spl-memo";
 import { encryptImage } from "@/lib/crypto";
 import { serializeProof } from "@/lib/zkproof";
 import { supabase } from "@/integrations/supabase/client";
@@ -28,21 +35,21 @@ const PAYMENT_AMOUNT_USD = 0.01; // $0.01 for testing, will change to 5.00 for p
 
 const fetchSolPrice = async (): Promise<number> => {
   try {
-    const { data, error } = await supabase.functions.invoke('get-sol-price');
-    
+    const { data, error } = await supabase.functions.invoke("get-sol-price");
+
     if (error) {
-      console.error('Failed to fetch SOL price:', error);
-      throw new Error('Unable to fetch SOL price. Please try again.');
+      console.error("Failed to fetch SOL price:", error);
+      throw new Error("Unable to fetch SOL price. Please try again.");
     }
-    
-    if (!data || typeof data.price !== 'number') {
-      throw new Error('Invalid price data received');
+
+    if (!data || typeof data.price !== "number") {
+      throw new Error("Invalid price data received");
     }
-    
+
     return data.price;
   } catch (error) {
-    console.error('Failed to fetch SOL price:', error);
-    throw new Error('Unable to fetch SOL price. Please try again.');
+    console.error("Failed to fetch SOL price:", error);
+    throw new Error("Unable to fetch SOL price. Please try again.");
   }
 };
 
@@ -69,7 +76,7 @@ const Index = () => {
   const pixelationCanvasRef = useRef<HTMLCanvasElement>(null);
   const fpsCounterRef = useRef({
     frames: 0,
-    lastTime: Date.now()
+    lastTime: Date.now(),
   });
   useEffect(() => {
     // Initialize camera
@@ -79,8 +86,8 @@ const Index = () => {
           video: {
             facingMode: "user",
             width: 300,
-            height: 380
-          }
+            height: 380,
+          },
         });
         setStream(mediaStream);
         if (videoRef.current) {
@@ -93,7 +100,7 @@ const Index = () => {
     initCamera();
     return () => {
       if (stream) {
-        stream.getTracks().forEach(track => track.stop());
+        stream.getTracks().forEach((track) => track.stop());
       }
     };
   }, []);
@@ -139,7 +146,7 @@ const Index = () => {
       const now = Date.now();
       const delta = now - fpsCounterRef.current.lastTime;
       if (delta >= 1000) {
-        setFps(Math.round(fpsCounterRef.current.frames * 1000 / delta));
+        setFps(Math.round((fpsCounterRef.current.frames * 1000) / delta));
         fpsCounterRef.current.frames = 0;
         fpsCounterRef.current.lastTime = now;
       }
@@ -163,16 +170,13 @@ const Index = () => {
   useEffect(() => {
     const fetchBalanceAndPrice = async () => {
       if (!publicKey || !connection) return;
-      
+
       try {
-        const [balance, price] = await Promise.all([
-          connection.getBalance(publicKey),
-          fetchSolPrice()
-        ]);
+        const [balance, price] = await Promise.all([connection.getBalance(publicKey), fetchSolPrice()]);
         setWalletBalance(balance / LAMPORTS_PER_SOL);
         setSolPrice(price);
       } catch (error) {
-        console.error('Failed to fetch balance/price:', error);
+        console.error("Failed to fetch balance/price:", error);
       }
     };
 
@@ -190,15 +194,15 @@ const Index = () => {
 
       try {
         const { data, error } = await supabase
-          .from('nft_mints')
-          .select('*')
-          .eq('user_public_key', publicKey.toBase58())
-          .order('created_at', { ascending: false });
+          .from("nft_mints")
+          .select("*")
+          .eq("user_public_key", publicKey.toBase58())
+          .order("created_at", { ascending: false });
 
         if (error) throw error;
         setMintedNFTs(data || []);
       } catch (error) {
-        console.error('Failed to fetch minted NFTs:', error);
+        console.error("Failed to fetch minted NFTs:", error);
       }
     };
 
@@ -234,7 +238,7 @@ const Index = () => {
           hour: "2-digit",
           minute: "2-digit",
           second: "2-digit",
-          hour12: false
+          hour12: false,
         });
         context.fillText(timeString, 290, 370);
         const dataUrl = canvas.toDataURL();
@@ -277,79 +281,78 @@ const Index = () => {
       setProgress(25);
 
       // 2. Convert encrypted data to blob for upload
-      const encryptedBlob = new Blob(
-        [Uint8Array.from(atob(encryption.encryptedData), c => c.charCodeAt(0))],
-        { type: 'application/octet-stream' }
-      );
+      const encryptedBlob = new Blob([Uint8Array.from(atob(encryption.encryptedData), (c) => c.charCodeAt(0))], {
+        type: "application/octet-stream",
+      });
       setProgress(35);
 
       // 3. Upload encrypted image to Supabase Storage
       const blobId = `${publicKeyBase58}-${Date.now()}`;
       const { error: uploadError } = await supabase.storage
-        .from('encrypted-pfps')
+        .from("encrypted-pfps")
         .upload(`${blobId}.enc`, encryptedBlob);
 
       if (uploadError) throw uploadError;
       setProgress(50);
 
       // 4. Get public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('encrypted-pfps')
-        .getPublicUrl(`${blobId}.enc`);
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("encrypted-pfps").getPublicUrl(`${blobId}.enc`);
 
       // 5. Store encryption metadata in database
-      const { error: dbError } = await supabase
-        .from('encrypted_photos')
-        .insert({
-          blob_id: blobId,
-          encrypted_key: encryption.encryptedKey,
-          user_public_key: publicKeyBase58,
-          commitment: encryption.commitment,
-          encrypted_image_url: publicUrl,
-          iv: encryption.iv,
-          zk_proof: encryption.zkProof ? serializeProof(encryption.zkProof.proof) : null,
-          zk_public_signals: encryption.zkProof ? encryption.zkProof.publicSignals : null
-        });
+      const { error: dbError } = await supabase.from("encrypted_photos").insert({
+        blob_id: blobId,
+        encrypted_key: encryption.encryptedKey,
+        user_public_key: publicKeyBase58,
+        commitment: encryption.commitment,
+        encrypted_image_url: publicUrl,
+        iv: encryption.iv,
+        zk_proof: encryption.zkProof ? serializeProof(encryption.zkProof.proof) : null,
+        zk_public_signals: encryption.zkProof ? encryption.zkProof.publicSignals : null,
+      });
 
       if (dbError) throw dbError;
       setProgress(60);
 
       // 6. Process payment
       setState("minting");
-      
+
       // Fetch current SOL price and calculate SOL amount
       const solPrice = await fetchSolPrice();
       const solAmount = PAYMENT_AMOUNT_USD / solPrice;
       console.log(`Payment: $${PAYMENT_AMOUNT_USD} = ${solAmount.toFixed(6)} SOL at $${solPrice.toFixed(2)}/SOL`);
-      
+
       // Check wallet balance
       const balance = await connection.getBalance(publicKey);
       const requiredLamports = Math.floor(solAmount * LAMPORTS_PER_SOL) + 10000; // Add 0.00001 SOL for fees
-      
+
       if (balance < requiredLamports) {
         const neededSol = requiredLamports / LAMPORTS_PER_SOL;
         const haveSol = balance / LAMPORTS_PER_SOL;
         const neededUsd = neededSol * solPrice;
         const haveUsd = haveSol * solPrice;
-        toast.error(`Insufficient balance: Need ${neededSol.toFixed(6)} SOL ($${neededUsd.toFixed(2)}), but wallet has ${haveSol.toFixed(6)} SOL ($${haveUsd.toFixed(2)})`);
-        throw new Error('INSUFFICIENT_BALANCE');
+        toast.error(
+          `Insufficient balance: Need ${neededSol.toFixed(6)} SOL ($${neededUsd.toFixed(2)}), but wallet has ${haveSol.toFixed(6)} SOL ($${haveUsd.toFixed(2)})`,
+        );
+        throw new Error("INSUFFICIENT_BALANCE");
       }
-      
+
       const recipientPubkey = new PublicKey(RECIPIENT_ADDRESS);
-      
+
       // Create memo content for on-chain proof
       const timestamp = Date.now();
       const memoContent = `zkpfp:${encryption.commitment}:${timestamp}`;
-      
+
       const transaction = new Transaction().add(
         // Payment transfer
         SystemProgram.transfer({
           fromPubkey: publicKey,
           toPubkey: recipientPubkey,
-          lamports: Math.floor(solAmount * LAMPORTS_PER_SOL)
+          lamports: Math.floor(solAmount * LAMPORTS_PER_SOL),
         }),
         // On-chain memo proof of zkPFP creation
-        createMemoInstruction(memoContent, [publicKey])
+        createMemoInstruction(memoContent, [publicKey]),
       );
 
       const { blockhash } = await connection.getLatestBlockhash();
@@ -359,52 +362,49 @@ const Index = () => {
       const signed = await signTransaction(transaction);
       const signature = await connection.sendRawTransaction(signed.serialize());
       await connection.confirmTransaction(signature);
-      
+
       toast.success(`Payment successful: ${solAmount.toFixed(6)} SOL ($${PAYMENT_AMOUNT_USD})`);
       setProgress(80);
 
       // 7. Create NFT record with on-chain proof reference
       const mintAddr = `zkpfp-${blobId}`;
       const metadataUri = `zkpfp:commitment:${encryption.commitment}:tx:${signature}`;
-      
-      const { error: mintError } = await supabase
-        .from('nft_mints')
-        .insert({
-          user_public_key: publicKeyBase58,
-          payment_signature: signature,
-          blob_id: blobId,
-          mint_address: mintAddr,
-          metadata_uri: metadataUri,
-          zk_proof: encryption.zkProof ? serializeProof(encryption.zkProof.proof) : null,
-          zk_public_signals: encryption.zkProof ? encryption.zkProof.publicSignals : null
-        });
+
+      const { error: mintError } = await supabase.from("nft_mints").insert({
+        user_public_key: publicKeyBase58,
+        payment_signature: signature,
+        blob_id: blobId,
+        mint_address: mintAddr,
+        metadata_uri: metadataUri,
+        zk_proof: encryption.zkProof ? serializeProof(encryption.zkProof.proof) : null,
+        zk_public_signals: encryption.zkProof ? encryption.zkProof.publicSignals : null,
+      });
 
       if (mintError) throw mintError;
-      
+
       setMintAddress(signature); // Store the actual on-chain transaction signature
       setProgress(100);
       setState("success");
       toast.dismiss();
       toast.success("zkPFP created with on-chain proof!");
-
     } catch (error) {
       console.error("Encryption/minting error:", error);
-      
+
       // Parse specific error types
       const errorMessage = error.message || error.toString();
-      
-      if (errorMessage.includes('INSUFFICIENT_BALANCE')) {
+
+      if (errorMessage.includes("INSUFFICIENT_BALANCE")) {
         // Already showed detailed toast in balance check
-      } else if (errorMessage.includes('User rejected') || errorMessage.includes('user rejected')) {
-        toast.error('Transaction cancelled by user.');
-      } else if (errorMessage.includes('Attempt to debit')) {
-        toast.error('Wallet has insufficient funds. Please add SOL to your wallet.');
-      } else if (errorMessage.includes('Failed to fetch') || errorMessage.includes('fetch SOL price')) {
-        toast.error('Network error. Please check your connection and try again.');
+      } else if (errorMessage.includes("User rejected") || errorMessage.includes("user rejected")) {
+        toast.error("Transaction cancelled by user.");
+      } else if (errorMessage.includes("Attempt to debit")) {
+        toast.error("Wallet has insufficient funds. Please add SOL to your wallet.");
+      } else if (errorMessage.includes("Failed to fetch") || errorMessage.includes("fetch SOL price")) {
+        toast.error("Network error. Please check your connection and try again.");
       } else {
         toast.error(`Transaction failed: ${errorMessage.slice(0, 100)}`);
       }
-      
+
       setState("photo-taken");
       setProgress(0);
     }
@@ -418,86 +418,70 @@ const Index = () => {
 
     try {
       // Check if this is a zkpfp record (not a real on-chain NFT yet)
-      const isZkpfpRecord = mintAddr.startsWith('zkpfp-') || mintAddr.startsWith('mock-nft-');
-      
+      const isZkpfpRecord = mintAddr.startsWith("zkpfp-") || mintAddr.startsWith("mock-nft-");
+
       if (isZkpfpRecord) {
         // For zkPFP records, just delete from database
         toast.loading("Removing zkPFP record...");
-        
-        const { error } = await supabase
-          .from('nft_mints')
-          .delete()
-          .eq('id', nftId);
+
+        const { error } = await supabase.from("nft_mints").delete().eq("id", nftId);
 
         if (error) throw error;
 
-        setMintedNFTs(prev => prev.filter(nft => nft.id !== nftId));
-        
+        setMintedNFTs((prev) => prev.filter((nft) => nft.id !== nftId));
+
         toast.dismiss();
         toast.success("zkPFP record removed");
         return;
       }
-      
+
       // For real NFTs (when implemented), burn on-chain
       toast.loading("Burning NFT on Solana...");
-      
+
       if (!signTransaction) {
         toast.error("Wallet does not support transaction signing");
         return;
       }
-      
+
       const mintPubkey = new PublicKey(mintAddr);
-      
+
       // Get the associated token account for this NFT
-      const { getAssociatedTokenAddress } = await import('@solana/spl-token');
-      const tokenAccount = await getAssociatedTokenAddress(
-        mintPubkey,
-        publicKey
-      );
-      
+      const { getAssociatedTokenAddress } = await import("@solana/spl-token");
+      const tokenAccount = await getAssociatedTokenAddress(mintPubkey, publicKey);
+
       // Create burn instruction (burns 1 token, which is the NFT)
-      const burnIx = createBurnInstruction(
-        tokenAccount,
-        mintPubkey,
-        publicKey,
-        1,
-        [],
-        TOKEN_PROGRAM_ID
-      );
-      
+      const burnIx = createBurnInstruction(tokenAccount, mintPubkey, publicKey, 1, [], TOKEN_PROGRAM_ID);
+
       // Create and send transaction
       const transaction = new Transaction().add(burnIx);
       transaction.feePayer = publicKey;
       transaction.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
-      
+
       const signedTx = await signTransaction(transaction);
       const signature = await connection.sendRawTransaction(signedTx.serialize());
-      
+
       toast.loading("Confirming burn transaction...");
-      await connection.confirmTransaction(signature, 'confirmed');
-      
-      console.log('NFT burned on-chain. Signature:', signature);
-      
+      await connection.confirmTransaction(signature, "confirmed");
+
+      console.log("NFT burned on-chain. Signature:", signature);
+
       // Delete from database after successful on-chain burn
       toast.loading("Updating database...");
-      const { error } = await supabase
-        .from('nft_mints')
-        .delete()
-        .eq('id', nftId);
+      const { error } = await supabase.from("nft_mints").delete().eq("id", nftId);
 
       if (error) throw error;
 
-      setMintedNFTs(prev => prev.filter(nft => nft.id !== nftId));
-      
+      setMintedNFTs((prev) => prev.filter((nft) => nft.id !== nftId));
+
       toast.dismiss();
       toast.success("zkPFP burned successfully on-chain!");
     } catch (error) {
-      console.error('Burn error:', error);
+      console.error("Burn error:", error);
       toast.dismiss();
-      
+
       const errorMessage = error.message || error.toString();
-      if (errorMessage.includes('User rejected') || errorMessage.includes('user rejected')) {
-        toast.error('Burn cancelled by user.');
+      if (errorMessage.includes("User rejected") || errorMessage.includes("user rejected")) {
+        toast.error("Burn cancelled by user.");
       } else {
         toast.error(`Failed to burn zkPFP: ${errorMessage.slice(0, 100)}`);
       }
@@ -516,194 +500,270 @@ const Index = () => {
         return "";
     }
   };
-  return <div className="min-h-screen flex flex-col">
+  return (
+    <div className="min-h-screen flex flex-col">
       <Header currentPage="take-photo" walletBalance={walletBalance} solPrice={solPrice} />
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col items-center justify-center px-4 gap-12">
         <div className="w-full max-w-[300px] flex flex-col items-center space-y-8">
+          {/* Main Content */}
+          <div className="w-full flex flex-col items-center space-y-6">
+            {/* Title */}
+            <div className="text-center space-y-1">
+              <h2 className="text-2xl font-styrene font-black text-secondary">
+                {state === "success" ? "zkPFP Created" : "Take an Encrypted Photo"}
+              </h2>
+              <p className="text-sm text-secondary">
+                {state === "success"
+                  ? "Your encrypted profile photo is ready"
+                  : "Permit decrypt to any entity with ZK + NDA"}
+              </p>
+            </div>
 
-        {/* Main Content */}
-        <div className="w-full flex flex-col items-center space-y-6">
-          {/* Title */}
-          <div className="text-center space-y-1">
-            <h2 className="text-2xl font-styrene font-black text-secondary">
-              {state === "success" ? "zkPFP Created" : "Take an Encrypted Photo"}
-            </h2>
-            <p className="text-sm text-secondary">
-              {state === "success" ? "Your encrypted profile photo is ready" : "Permit decrypt to any entity with ZK + NDA"}
-            </p>
-          </div>
+            {/* Camera Preview */}
+            <div className="relative camera-preview w-[300px] h-[380px] bg-muted/20">
+              <video
+                ref={videoRef}
+                autoPlay
+                playsInline
+                muted
+                className={`w-full h-full object-cover ${hasPhoto ? "hidden" : ""}`}
+              />
+              <canvas
+                ref={pixelationCanvasRef}
+                width="300"
+                height="380"
+                className={`absolute inset-0 w-full h-full ${hasPhoto ? "hidden" : ""}`}
+              />
 
-          {/* Camera Preview */}
-          <div className="relative camera-preview w-[300px] h-[380px] bg-muted/20">
-            <video ref={videoRef} autoPlay playsInline muted className={`w-full h-full object-cover ${hasPhoto ? "hidden" : ""}`} />
-            <canvas ref={pixelationCanvasRef} width="300" height="380" className={`absolute inset-0 w-full h-full ${hasPhoto ? "hidden" : ""}`} />
+              {/* Face Guide Overlay - only in pre-photo state */}
+              {state === "idle" && (
+                <img
+                  src={faceGuide}
+                  alt="Face guide"
+                  className="absolute inset-0 w-full h-full object-contain pointer-events-none opacity-80"
+                />
+              )}
 
-            {/* Face Guide Overlay - only in pre-photo state */}
-            {state === "idle" && <img src={faceGuide} alt="Face guide" className="absolute inset-0 w-full h-full object-contain pointer-events-none opacity-80" />}
+              {/* FPS Counter - only in pre-photo state */}
+              {state === "idle" && (
+                <div className="absolute top-2 left-2 text-[10px] font-mono text-white bg-black/50 px-2 py-1 rounded">
+                  {fps} FPS
+                </div>
+              )}
 
-            {/* FPS Counter - only in pre-photo state */}
-            {state === "idle" && <div className="absolute top-2 left-2 text-[10px] font-mono text-white bg-black/50 px-2 py-1 rounded">
-                {fps} FPS
-              </div>}
+              {/* User Name Overlay - only visible during idle state */}
+              {userName.trim() && state === "idle" && (
+                <div className="absolute top-2 right-2 text-white font-bold text-sm bg-black/50 px-2 py-1 rounded font-mono">
+                  {userName.trim()}
+                </div>
+              )}
 
-            {/* User Name Overlay - only visible during idle state */}
-            {userName.trim() && state === "idle" && (
-              <div className="absolute top-2 right-2 text-white font-bold text-sm bg-black/50 px-2 py-1 rounded font-mono">
-                {userName.trim()}
+              {/* Date/Time Display - always visible, gets captured */}
+              <div className="absolute bottom-2 right-2 text-[10px] font-mono text-white bg-black/50 px-2 py-1 rounded">
+                {currentTime.toLocaleString("en-US", {
+                  month: "2-digit",
+                  day: "2-digit",
+                  year: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  second: "2-digit",
+                  hour12: false,
+                })}
+              </div>
+              <canvas ref={canvasRef} width="300" height="380" className="hidden" />
+              {hasPhoto && (
+                <div
+                  className="absolute inset-0 night-vision-effect"
+                  style={
+                    {
+                      "--bg-image": `url(${photoDataUrl})`,
+                    } as React.CSSProperties
+                  }
+                />
+              )}
+              {state === "success" && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+                  <div className="text-center space-y-2">
+                    <div className="w-16 h-16 mx-auto rounded-full bg-primary flex items-center justify-center">
+                      <svg
+                        className="w-8 h-8 text-primary-foreground"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Add Your Name - Collapsible (Only in idle state, before photo taken) */}
+            {state === "idle" && !hasPhoto && (
+              <Collapsible open={isNameOpen} onOpenChange={setIsNameOpen} className="w-[300px]">
+                <CollapsibleTrigger asChild>
+                  <button className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
+                    <ChevronDown className={`h-3 w-3 transition-transform ${isNameOpen ? "rotate-180" : ""}`} />
+                    Add Your Name
+                  </button>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="mt-2">
+                  <Input
+                    type="text"
+                    placeholder="Enter your name"
+                    value={userName}
+                    onChange={(e) => setUserName(e.target.value)}
+                    maxLength={30}
+                    className="w-full text-sm"
+                  />
+                </CollapsibleContent>
+              </Collapsible>
+            )}
+
+            {/* Wallet Connect */}
+            {!connected && (
+              <div className="w-[300px]">
+                <WalletMultiButton className="!w-full !h-12 !rounded-xl !font-styrene !font-black !text-base !bg-secondary !text-[#181818] !border-2 !border-secondary hover:!bg-transparent hover:!text-[#ed565a] hover:!border-[#ed565a]" />
               </div>
             )}
 
-            {/* Date/Time Display - always visible, gets captured */}
-            <div className="absolute bottom-2 right-2 text-[10px] font-mono text-white bg-black/50 px-2 py-1 rounded">
-              {currentTime.toLocaleString("en-US", {
-                month: "2-digit",
-                day: "2-digit",
-                year: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
-                second: "2-digit",
-                hour12: false
-              })}
-            </div>
-            <canvas ref={canvasRef} width="300" height="380" className="hidden" />
-            {hasPhoto && <div className="absolute inset-0 night-vision-effect" style={{
-              "--bg-image": `url(${photoDataUrl})`
-            } as React.CSSProperties} />}
-            {state === "success" && <div className="absolute inset-0 flex items-center justify-center bg-black/40">
-                <div className="text-center space-y-2">
-                  <div className="w-16 h-16 mx-auto rounded-full bg-primary flex items-center justify-center">
-                    <svg className="w-8 h-8 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                  </div>
-                </div>
-              </div>}
-          </div>
-
-          {/* Add Your Name - Collapsible (Only in idle state, before photo taken) */}
-          {state === "idle" && !hasPhoto && (
-            <Collapsible
-              open={isNameOpen}
-              onOpenChange={setIsNameOpen}
-              className="w-[300px]"
-            >
-              <CollapsibleTrigger asChild>
-                <button className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
-                  <ChevronDown className={`h-3 w-3 transition-transform ${isNameOpen ? 'rotate-180' : ''}`} />
-                  Add Your Name
-                </button>
-              </CollapsibleTrigger>
-              <CollapsibleContent className="mt-2">
-                <Input
-                  type="text"
-                  placeholder="Enter your name"
-                  value={userName}
-                  onChange={(e) => setUserName(e.target.value)}
-                  maxLength={30}
-                  className="w-full text-sm"
-                />
-              </CollapsibleContent>
-            </Collapsible>
-          )}
-
-          {/* Wallet Connect */}
-          {!connected && (
-            <div className="w-[300px]">
-              <WalletMultiButton className="!w-full !h-12 !rounded-xl !font-styrene !font-black !text-base !bg-secondary !text-[#181818] !border-2 !border-secondary hover:!bg-transparent hover:!text-[#ed565a] hover:!border-[#ed565a]" />
-            </div>
-          )}
-
-          {/* Buttons */}
-          {state !== "success" && connected && <div className="w-[300px] space-y-3">
-              <div className="flex gap-3">
-                <Button onClick={hasPhoto ? retakePhoto : takePhoto} disabled={state !== "idle" && state !== "photo-taken"} variant="outline" className="flex-1 h-12 rounded-xl font-styrene font-black text-base border-2 border-[#ed565a] text-[#ed565a] hover:bg-transparent hover:border-[#F0E3C3] hover:text-[#F0E3C3]">
-                  {hasPhoto ? "Retake Photo" : "Take a Photo"}
-                </Button>
-                <Button onClick={encryptAndMint} disabled={!hasPhoto || state !== "photo-taken"} className="flex-1 h-12 rounded-xl font-styrene font-black text-base bg-secondary text-[#181818] border-2 border-secondary hover:bg-transparent hover:text-[#ed565a] hover:border-[#ed565a] disabled:opacity-50 disabled:cursor-not-allowed">
-                  Encrypt & Mint
-                </Button>
-              </div>
-              {hasPhoto && state === "photo-taken" && <div className="flex items-center justify-center gap-2 text-accent text-sm font-medium">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
-                  </svg>
-                  Uploaded
-                </div>}
-            </div>}
-
-          {/* Success Actions */}
-          {state === "success" && <div className="w-full space-y-4">
-              <Link to="/zkpfps" className="w-full block">
-                <Button className="w-full h-12 rounded-2xl btn-primary font-styrene font-black text-base text-[#181818]">
-                  See zkPFP Verification
-                </Button>
-              </Link>
-              {mintAddress && (
-                <a 
-                  href={`https://explorer.solana.com/tx/${mintAddress}?cluster=${import.meta.env.VITE_SOLANA_RPC_ENDPOINT?.includes('devnet') ? 'devnet' : 'mainnet'}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full block"
-                >
-                  <Button variant="outline" className="w-full h-12 rounded-2xl font-styrene font-black text-base border-2 border-[#ed565a] text-[#ed565a] hover:bg-transparent hover:border-[#F0E3C3] hover:text-[#F0E3C3]">
-                    <ExternalLink className="w-4 h-4 mr-2" />
-                    View On-Chain Proof
+            {/* Buttons */}
+            {state !== "success" && connected && (
+              <div className="w-[300px] space-y-3">
+                <div className="flex gap-3">
+                  <Button
+                    onClick={hasPhoto ? retakePhoto : takePhoto}
+                    disabled={state !== "idle" && state !== "photo-taken"}
+                    variant="outline"
+                    className="flex-1 h-12 rounded-xl font-styrene font-black text-base border-2 border-[#ed565a] text-[#ed565a] hover:bg-transparent hover:border-[#F0E3C3] hover:text-[#F0E3C3]"
+                  >
+                    {hasPhoto ? "Retake Photo" : "Take a Photo"}
                   </Button>
-                </a>
-              )}
-              <Button variant="ghost" onClick={() => window.location.reload()} className="w-full h-12 rounded-2xl font-styrene font-black text-base text-foreground hover:bg-[#e4dac2] hover:text-[#181818]">
-                Restart
-              </Button>
-            </div>}
-
-          {/* Progress Bar */}
-          {(state === "encrypting" || state === "minting" || state === "success") && <div className="w-full space-y-2">
-              {/* ZK-SNARK Progress Indicator */}
-              {state === "encrypting" && zkProgressMessage && (
-                <div className="w-full space-y-2 mb-4 p-3 bg-[#3a3a3a]/50 rounded-lg border border-[#3a3a3a]">
-                  <div className="flex items-center gap-2 mb-1">
-                    <svg className="w-4 h-4 text-secondary animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                    </svg>
-                    <span className="text-xs font-mono text-secondary font-bold">ZK-SNARK Proof Generation</span>
-                  </div>
-                  <div className="w-full h-1.5 bg-black/30 rounded-full overflow-hidden">
-                    <div className="h-full bg-secondary transition-all duration-300" style={{
-                      width: `${zkProgress}%`
-                    }} />
-                  </div>
-                  <p className="text-[10px] text-muted-foreground font-mono">{zkProgressMessage}</p>
+                  <Button
+                    onClick={encryptAndMint}
+                    disabled={!hasPhoto || state !== "photo-taken"}
+                    className="flex-1 h-12 rounded-xl font-styrene font-black text-base bg-secondary text-[#181818] border-2 border-secondary hover:bg-transparent hover:text-[#ed565a] hover:border-[#ed565a] disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Encrypt & Mint
+                  </Button>
                 </div>
-              )}
-              
-              {/* Main Progress Bar */}
-              <div className="w-full h-2 bg-muted/20 rounded-full overflow-hidden border border-muted">
-                <div className="h-full bg-secondary transition-all duration-300" style={{
-                width: `${progress}%`
-              }} />
+                {hasPhoto && state === "photo-taken" && (
+                  <div className="flex items-center justify-center gap-2 text-accent text-sm font-medium">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 10l7-7m0 0l7 7m-7-7v18"
+                      />
+                    </svg>
+                    Uploaded
+                  </div>
+                )}
               </div>
-              <p className="text-sm text-center text-secondary font-medium">{getStatusText()}</p>
-            </div>}
-        </div>
+            )}
 
-        {/* Footer */}
-        <div className="text-center space-y-4">
-          <p className="text-xs text-muted-foreground opacity-70">
-            Your photo never leaves your device. Only the encrypted commitment is used.
-          </p>
+            {/* Success Actions */}
+            {state === "success" && (
+              <div className="w-full space-y-4">
+                <Link to="/zkpfps" className="w-full block">
+                  <Button className="w-full h-12 rounded-2xl btn-primary font-styrene font-black text-base text-[#181818]">
+                    See zkPFP Verification
+                  </Button>
+                </Link>
+                {mintAddress && (
+                  <a
+                    href={`https://explorer.solana.com/tx/${mintAddress}?cluster=${import.meta.env.VITE_SOLANA_RPC_ENDPOINT?.includes("devnet") ? "devnet" : "mainnet"}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full block"
+                  >
+                    <Button
+                      variant="outline"
+                      className="w-full h-12 rounded-2xl font-styrene font-black text-base border-2 border-[#ed565a] text-[#ed565a] hover:bg-transparent hover:border-[#F0E3C3] hover:text-[#F0E3C3]"
+                    >
+                      <ExternalLink className="w-4 h-4 mr-2" />
+                      View On-Chain Proof
+                    </Button>
+                  </a>
+                )}
+                <Button
+                  variant="ghost"
+                  onClick={() => window.location.reload()}
+                  className="w-full h-12 rounded-2xl font-styrene font-black text-base text-foreground hover:bg-[#e4dac2] hover:text-[#181818]"
+                >
+                  Restart
+                </Button>
+              </div>
+            )}
 
-          {/* Security Info */}
-          <div className="flex flex-col items-center gap-2 pt-4">
-            <p className="text-xs text-muted-foreground">ZK-Snark Secured with</p>
-            <div className="flex items-center gap-4">
-              <img src={zcashLogo} alt="ZCash" className="h-8" />
-              <span className="text-xs text-muted-foreground">minted on</span>
-              <img src={solanaLogo} alt="Solana" className="h-8" />
+            {/* Progress Bar */}
+            {(state === "encrypting" || state === "minting" || state === "success") && (
+              <div className="w-full space-y-2">
+                {/* ZK-SNARK Progress Indicator */}
+                {state === "encrypting" && zkProgressMessage && (
+                  <div className="w-full space-y-2 mb-4 p-3 bg-[#3a3a3a]/50 rounded-lg border border-[#3a3a3a]">
+                    <div className="flex items-center gap-2 mb-1">
+                      <svg
+                        className="w-4 h-4 text-secondary animate-spin"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                        />
+                      </svg>
+                      <span className="text-xs font-mono text-secondary font-bold">ZK-SNARK Proof Generation</span>
+                    </div>
+                    <div className="w-full h-1.5 bg-black/30 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-secondary transition-all duration-300"
+                        style={{
+                          width: `${zkProgress}%`,
+                        }}
+                      />
+                    </div>
+                    <p className="text-[10px] text-muted-foreground font-mono">{zkProgressMessage}</p>
+                  </div>
+                )}
+
+                {/* Main Progress Bar */}
+                <div className="w-full h-2 bg-muted/20 rounded-full overflow-hidden border border-muted">
+                  <div
+                    className="h-full bg-secondary transition-all duration-300"
+                    style={{
+                      width: `${progress}%`,
+                    }}
+                  />
+                </div>
+                <p className="text-sm text-center text-secondary font-medium">{getStatusText()}</p>
+              </div>
+            )}
+          </div>
+
+          {/* Footer */}
+          <div className="text-center space-y-4">
+            <p className="text-xs text-muted-foreground opacity-70">
+              Your photo never leaves your device. Only the encrypted commitment is used.
+            </p>
+
+            {/* Security Info */}
+            <div className="flex flex-col items-center gap-2 pt-4">
+              <p className="text-xs text-muted-foreground">ZK-Snark Secured with</p>
+              <div className="flex items-center gap-4">
+                <img src={zcashLogo} alt="ZCash" className="h-8" />
+                <span className="text-xs text-muted-foreground">minted on</span>
+                <img src={solanaLogo} alt="Solana" className="h-8" />
+              </div>
             </div>
           </div>
-        </div>
         </div>
       </div>
 
@@ -715,11 +775,17 @@ const Index = () => {
             <img src={aruaitoLogo} alt="Arubaito" className="h-4" />
           </a>
         </div>
-        <a href="https://github.com/tenshijinn/arubaito" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors">
+        <a
+          href="https://github.com/tenshijinn/zkprof"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
+        >
           <Github size={16} />
           <span>View on GitHub</span>
         </a>
       </div>
-    </div>;
+    </div>
+  );
 };
 export default Index;
