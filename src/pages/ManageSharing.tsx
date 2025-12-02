@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Header } from "@/components/Header";
+import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -144,7 +145,7 @@ const ManageSharing = () => {
 
   if (!publicKey) {
     return (
-      <div className="min-h-screen flex flex-col">
+      <div className="min-h-screen flex flex-col pb-20 md:pb-0">
         <Header currentPage="manage-sharing" walletBalance={walletBalance} solPrice={solPrice} />
         <div className="flex-1 flex items-center justify-center px-4">
           <Card className="max-w-md w-full">
@@ -156,12 +157,13 @@ const ManageSharing = () => {
             </CardHeader>
           </Card>
         </div>
+        <MobileBottomNav />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col pb-20 md:pb-0">
       <Header currentPage="manage-sharing" walletBalance={walletBalance} solPrice={solPrice} />
       <div className="flex-1 flex flex-col items-center px-4 py-12">
         <div className="w-full max-w-[800px]">
@@ -261,6 +263,7 @@ const ManageSharing = () => {
           )}
         </div>
       </div>
+      <MobileBottomNav />
     </div>
   );
 };

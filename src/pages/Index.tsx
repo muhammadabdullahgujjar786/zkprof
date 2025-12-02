@@ -7,6 +7,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
 import { Header } from "@/components/Header";
+import { MobileBottomNav } from "@/components/MobileBottomNav";
 import aruaitoLogo from "@/assets/arubaito-logo.png";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import {
@@ -501,7 +502,7 @@ const Index = () => {
     }
   };
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col pb-20 md:pb-0">
       <Header currentPage="take-photo" walletBalance={walletBalance} solPrice={solPrice} />
 
       {/* Main Content */}
@@ -767,8 +768,8 @@ const Index = () => {
         </div>
       </div>
 
-      {/* Footer */}
-      <div className="w-full flex justify-between items-center px-8 py-6">
+      {/* Footer - Hidden on mobile */}
+      <div className="hidden md:flex w-full justify-between items-center px-8 py-6">
         <div className="flex items-center gap-2">
           <span className="text-xs text-muted-foreground">zkProf by</span>
           <a href="https://arubaito.app" target="_blank" rel="noopener noreferrer">
@@ -785,6 +786,9 @@ const Index = () => {
           <span>View on GitHub</span>
         </a>
       </div>
+
+      {/* Mobile Bottom Navigation */}
+      <MobileBottomNav />
     </div>
   );
 };

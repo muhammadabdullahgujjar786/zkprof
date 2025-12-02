@@ -2,6 +2,7 @@ import { Card } from "@/components/ui/card";
 import { Camera, Lock, Zap, Shield, Github } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Header } from "@/components/Header";
+import { MobileBottomNav } from "@/components/MobileBottomNav";
 import aruaitoLogo from "@/assets/arubaito-logo.png";
 import { useWalletBalance } from "@/hooks/useWalletBalance";
 
@@ -9,7 +10,7 @@ const HowToUse = () => {
   const { walletBalance, solPrice } = useWalletBalance();
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col pb-20 md:pb-0">
       <Header currentPage="how-to-use" walletBalance={walletBalance} solPrice={solPrice} />
 
       {/* Main Content */}
@@ -123,8 +124,8 @@ const HowToUse = () => {
         </div>
       </div>
 
-      {/* Footer */}
-      <div className="w-full flex justify-between items-center px-8 py-6 mt-8">
+      {/* Footer - Hidden on mobile */}
+      <div className="hidden md:flex w-full justify-between items-center px-8 py-6 mt-8">
         <div className="flex items-center gap-2">
           <span className="text-xs text-muted-foreground">zkProf by</span>
           <a href="https://arubaito.app" target="_blank" rel="noopener noreferrer">
@@ -141,6 +142,9 @@ const HowToUse = () => {
           <span>View on GitHub</span>
         </a>
       </div>
+
+      {/* Mobile Bottom Navigation */}
+      <MobileBottomNav />
     </div>
   );
 };
