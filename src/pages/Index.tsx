@@ -31,7 +31,7 @@ import zkProfLogo from "@/assets/zkprof-logo.png";
 import { Card } from "@/components/ui/card";
 type AppState = "idle" | "photo-taken" | "encrypting" | "minting" | "success";
 const RECIPIENT_ADDRESS = "8DuKPJAqMEa84VTcDfqF967CUG98Tf6DdtfyJFviSKL6";
-const PAYMENT_AMOUNT_USD = 0.01; // $0.01 for testing, will change to 5.00 for production
+const PAYMENT_AMOUNT_USD = 5.0; // $5.00 in SOL
 
 const fetchSolPrice = async (): Promise<number> => {
   try {

@@ -35,23 +35,25 @@ zkProf is a privacy-focused platform that lets you create encrypted profile phot
 While your photo content is fully protected by encryption, using zkProf does create a public on-chain record. Here's what's visible vs. protected:
 
 **Protected (Private):**
+
 - Your actual photo image
 - Your encryption keys
 - The encrypted image data
 
 **Publicly Visible on Solana Blockchain:**
+
 - Your wallet address linked to each zkPFP creation
 - Timestamp of when each zkPFP was created
 - Commitment hash (cryptographic fingerprint, cannot reveal photo)
 
-This means someone could see *that* your wallet created zkPFPs and *when*, but never *what* the photos contain. If you require complete anonymity of even the creation activity, consider using a dedicated wallet for zkProf.
+This means someone could see _that_ your wallet created zkPFPs and _when_, but never _what_ the photos contain. If you require complete anonymity of even the creation activity, consider using a dedicated wallet for zkProf.
 
 ### How It Works (Simple Version)
 
 1. Connect your Solana wallet (like Phantom)
 2. Take a photo with your webcam
 3. The photo is encrypted and a ZK-SNARK proof is generated automatically
-4. A memo transaction is recorded on Solana blockchain with your commitment hash (costs ~$0.01 in SOL for testing, $5.00 for production)
+4. A memo transaction is recorded on Solana blockchain with your commitment hash (costs ~$5.00 in SOL)
 5. Your encrypted photo is stored securely in cloud storage
 6. You can view the on-chain proof anytime on Solana Explorer
 7. You control who can see your photo through the Manage Sharing page

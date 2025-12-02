@@ -66,9 +66,7 @@ const HowToUse = () => {
                     Click "Encrypt & Mint" to encrypt your photo using AES-256-GCM encryption and create a ZK-SNARK
                     proof. The encrypted data and cryptographic commitment are stored on-chain.
                   </p>
-                  <p className="text-xs text-muted-foreground italic">
-                    Cost: $0.01 USD (paid in SOL) for testing purposes.
-                  </p>
+                  <p className="text-xs text-muted-foreground italic">Cost: $5.00 USD (paid in SOL).</p>
                 </div>
               </div>
             </Card>
