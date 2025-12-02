@@ -223,9 +223,12 @@ const ZkPFPs = () => {
                           variant="outline"
                           size="sm"
                           className="flex-1 text-xs"
-                          onClick={() =>
-                            window.open(`https://explorer.solana.com/tx/${nft.payment_signature}`, "_blank")
-                          }
+                          onClick={() => {
+                            const rpcEndpoint = import.meta.env.VITE_SOLANA_RPC_ENDPOINT || '';
+                            const isDevnet = rpcEndpoint.includes('devnet');
+                            const cluster = isDevnet ? '?cluster=devnet' : '';
+                            window.open(`https://explorer.solana.com/tx/${nft.payment_signature}${cluster}`, "_blank");
+                          }}
                         >
                           <ExternalLink className="h-3 w-3 mr-1" />
                           View

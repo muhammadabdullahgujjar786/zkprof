@@ -12,14 +12,14 @@ interface Props {
 
 export const SolanaWalletProvider: FC<Props> = ({ children }) => {
   const endpoint = useMemo(() => {
-    // Use custom RPC endpoint from secrets if available, otherwise fall back to devnet
+    // Use custom RPC endpoint from secrets if available, otherwise fall back to mainnet
     const customEndpoint = import.meta.env.VITE_SOLANA_RPC_ENDPOINT;
-    const finalEndpoint = customEndpoint || clusterApiUrl('devnet');
+    const finalEndpoint = customEndpoint || clusterApiUrl('mainnet-beta');
     
     console.log('🔗 Solana RPC Configuration:');
     console.log('  Custom endpoint defined:', !!customEndpoint);
     console.log('  Using endpoint:', finalEndpoint);
-    console.log('  Network:', finalEndpoint.includes('devnet') ? 'DEVNET' : 'MAINNET');
+    console.log('  Network:', finalEndpoint.includes('devnet') ? 'DEVNET' : finalEndpoint.includes('testnet') ? 'TESTNET' : 'MAINNET');
     
     return finalEndpoint;
   }, []);
